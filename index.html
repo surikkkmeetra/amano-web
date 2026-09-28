@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amano — Sistema de gestión comercial</title>
+<meta name="description" content="Sistema de gestión comercial para casas de electricidad e iluminación. Aplicación de escritorio para Windows.">
+
+<!-- Open Graph: cómo se ve el enlace cuando se comparte. -->
+<meta property="og:title" content="Amano — Sistema de gestión comercial">
+<meta property="og:description" content="Sistema de gestión comercial para casas de electricidad e iluminación. Aplicación de escritorio para Windows.">
+<meta property="og:type" content="website">
+
+<style>
+/* ==========================================================================
+   ENLACES Y DATOS A CONFIRMAR
+
+   Están todos acá abajo en el HTML, marcados con el comentario EDITAR.
+   Son tres: el repositorio, la descarga y la versión.
+   ========================================================================== */
+
+:root {
+  --tinta:        #16181d;
+  --tinta-media:  #4a4f58;
+  --tinta-tenue:  #7c828d;
+  --fondo:        #fbfaf8;
+  --papel:        #ffffff;
+  --linea:        #dedbd5;
+  --linea-suave:  #ebe8e3;
+
+  /* El azul es el de la barra de título del programa. */
+  --acento:       #0a246a;
+  --acento-claro: #e8ecf6;
+
+  /* La cara gris y los relieves de 1 px son los de la interfaz. */
+  --cara:         #d4d0c8;
+  --luz:          #ffffff;
+  --sombra:       #808080;
+  --oscuro:       #0a0a0a;
+
+  --fuente: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+            "Helvetica Neue", Arial, sans-serif;
+  --fuente-ui: Tahoma, "Segoe UI", Verdana, "DejaVu Sans", sans-serif;
+  --fuente-datos: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono",
+                  monospace;
+
+  --ancho: 1000px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --tinta:        #e8e6e3;
+    --tinta-media:  #a9aeb8;
+    --tinta-tenue:  #7f858f;
+    --fondo:        #14161a;
+    --papel:        #1b1e24;
+    --linea:        #2e333b;
+    --linea-suave:  #23272e;
+    --acento:       #9db4e8;
+    --acento-claro: #1d2334;
+  }
+}
+
+:root[data-theme="dark"] {
+  --tinta:        #e8e6e3;
+  --tinta-media:  #a9aeb8;
+  --tinta-tenue:  #7f858f;
+  --fondo:        #14161a;
+  --papel:        #1b1e24;
+  --linea:        #2e333b;
+  --linea-suave:  #23272e;
+  --acento:       #9db4e8;
+  --acento-claro: #1d2334;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--tinta);
+  font-family: var(--fuente);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.contenedor {
+  width: 100%;
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* --- encabezado ---------------------------------------------------------- */
+
+.barra {
+  border-bottom: 1px solid var(--linea);
+  background: var(--papel);
+}
+
+.barra .contenedor {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 56px;
+}
+
+.marca {
+  font-family: var(--fuente-ui);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.marca span { color: var(--acento); }
+
+.barra nav {
+  margin-left: auto;
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+}
+
+.barra nav a {
+  color: var(--tinta-media);
+  text-decoration: none;
+}
+
+.barra nav a:hover { color: var(--acento); }
+
+@media (max-width: 620px) {
+  .barra nav a.opcional { display: none; }
+}
+
+/* --- portada ------------------------------------------------------------- */
+
+.portada {
+  padding: 72px 0 48px;
+  border-bottom: 1px solid var(--linea-suave);
+}
+
+.etiqueta {
+  display: inline-block;
+  font-family: var(--fuente-datos);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--acento);
+  background: var(--acento-claro);
+  border: 1px solid var(--linea);
+  padding: 3px 8px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  margin: 0 0 16px;
+  font-size: clamp(30px, 6vw, 46px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 650;
+}
+
+.bajada {
+  margin: 0;
+  max-width: 60ch;
+  font-size: clamp(17px, 2.4vw, 19px);
+  color: var(--tinta-media);
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.boton {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 550;
+  text-decoration: none;
+  border: 1px solid var(--acento);
+  background: var(--acento);
+  color: #fff;
+  transition: opacity 0.12s;
+}
+
+.boton:hover { opacity: 0.88; }
+
+.boton.secundario {
+  background: transparent;
+  color: var(--acento);
+}
+
+.boton.secundario:hover {
+  background: var(--acento-claro);
+  opacity: 1;
+}
+
+.nota-descarga {
+  margin-top: 14px;
+  font-size: 13.5px;
+  color: var(--tinta-tenue);
+}
+
+/* --- ventana (marco de captura) ------------------------------------------
+   El marco imita la ventana del programa: barra de título azul y relieve de
+   1 px, que es como se ve la aplicación de verdad.
+   ------------------------------------------------------------------------- */
+
+.muestra { padding: 48px 0; }
+
+.ventana {
+  background: var(--cara);
+  padding: 3px;
+  box-shadow:
+    inset -1px -1px var(--oscuro),
+    inset  1px  1px var(--luz),
+    inset -2px -2px var(--sombra),
+    inset  2px  2px #dfdcd6,
+    0 10px 30px rgba(0, 0, 0, 0.13);
+}
+
+.ventana-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 24px;
+  padding: 0 3px 0 4px;
+  background: linear-gradient(90deg, #0a246a, #2a5adb);
+  color: #fff;
+  font-family: var(--fuente-ui);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ventana-botones {
+  margin-left: auto;
+  display: flex;
+  gap: 2px;
+}
+
+.ventana-botones i {
+  width: 16px;
+  height: 14px;
+  background: var(--cara);
+  box-shadow:
+    inset -1px -1px var(--oscuro),
+    inset  1px  1px var(--luz),
+    inset -2px -2px var(--sombra),
+    inset  2px  2px #dfdcd6;
+}
+
+.ventana-cuerpo {
+  margin-top: 3px;
+  background: var(--papel);
+  box-shadow:
+    inset  1px  1px var(--sombra),
+    inset -1px -1px var(--luz);
+}
+
+.ventana-cuerpo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Lo que se ve mientras no haya captura cargada. */
+.sin-captura {
+  aspect-ratio: 16 / 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  text-align: center;
+  color: var(--tinta-tenue);
+  font-family: var(--fuente-datos);
+  font-size: 13px;
+  background:
+    repeating-conic-gradient(var(--linea-suave) 0% 25%, transparent 0% 50%)
+    50% / 16px 16px;
+}
+
+.pie-muestra {
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: var(--tinta-tenue);
+  text-align: center;
+}
+
+/* --- secciones ----------------------------------------------------------- */
+
+section { padding: 48px 0; }
+
+section + section { border-top: 1px solid var(--linea-suave); }
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tinta-tenue);
+}
+
+.titulo-seccion {
+  margin: 0 0 28px;
+  font-size: clamp(22px, 3.4vw, 28px);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  font-weight: 620;
+  max-width: 34ch;
+}
+
+.parrafo {
+  max-width: 68ch;
+  margin: 0 0 16px;
+  color: var(--tinta-media);
+}
+
+/* --- funciones ----------------------------------------------------------- */
+
+.funciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 1px;
+  background: var(--linea);
+  border: 1px solid var(--linea);
+}
+
+.funcion {
+  background: var(--papel);
+  padding: 20px;
+}
+
+.funcion h3 {
+  margin: 0 0 6px;
+  font-size: 15.5px;
+  font-weight: 620;
+  color: var(--tinta);
+}
+
+.funcion p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--tinta-media);
+}
+
+/* --- ficha técnica ------------------------------------------------------- */
+
+.ficha {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  border-top: 1px solid var(--linea);
+}
+
+.ficha dt,
+.ficha dd {
+  margin: 0;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--linea-suave);
+}
+
+.ficha dt {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tinta-tenue);
+  padding-right: 16px;
+}
+
+.ficha dd {
+  font-size: 15px;
+  color: var(--tinta-media);
+}
+
+.ficha dd code {
+  font-family: var(--fuente-datos);
+  font-size: 13.5px;
+  background: var(--acento-claro);
+  padding: 1px 5px;
+}
+
+@media (max-width: 620px) {
+  .ficha { grid-template-columns: 1fr; }
+  .ficha dt { padding-bottom: 0; border-bottom: 0; }
+  .ficha dd { padding-top: 4px; }
+}
+
+/* --- descarga ------------------------------------------------------------ */
+
+.descarga {
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  padding: 32px;
+}
+
+.descarga .titulo-seccion { margin-bottom: 12px; }
+
+.requisitos {
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  color: var(--tinta-tenue);
+}
+
+.requisitos li { padding: 3px 0; }
+
+.requisitos li::before {
+  content: "·";
+  margin-right: 8px;
+  color: var(--acento);
+}
+
+/* --- pie ----------------------------------------------------------------- */
+
+footer {
+  border-top: 1px solid var(--linea);
+  background: var(--papel);
+  padding: 28px 0;
+  font-size: 14px;
+  color: var(--tinta-tenue);
+}
+
+footer .contenedor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  align-items: center;
+}
+
+footer a { color: var(--tinta-media); text-decoration: none; }
+footer a:hover { color: var(--acento); }
+footer .derecha { margin-left: auto; }
+
+@media (max-width: 620px) {
+  footer .derecha { margin-left: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<header class="barra">
+  <div class="contenedor">
+    <a class="marca" href="#">AMANO<span>.</span></a>
+    <nav>
+      <a href="#funciones">Funciones</a>
+      <a href="#tecnica" class="opcional">Ficha técnica</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="portada">
+    <div class="contenedor">
+      <!-- EDITAR: la versión, cuando publiques una nueva. -->
+      <p class="etiqueta">Versión 0.1.0 · en desarrollo</p>
+
+      <h1>Sistema de gestión comercial para casas de electricidad e iluminación</h1>
+
+      <p class="bajada">
+        Aplicación de escritorio para Windows. Administra catálogo, precios,
+        ventas de mostrador, comprobantes, cuentas corrientes, caja e
+        inventario. Funciona sin conexión, sobre una base local.
+      </p>
+
+      <div class="acciones">
+        <!-- EDITAR: poné tu dirección de correo. -->
+        <a class="boton" href="mailto:CORREO@EJEMPLO.COM?subject=Amano">
+          Pedir una demostración
+        </a>
+        <a class="boton secundario" href="#funciones">
+          Ver qué hace
+        </a>
+      </div>
+
+      <p class="nota-descarga">
+        Instalador para Windows 10 y 11, 64 bits · funciona sin conexión
+      </p>
+    </div>
+  </section>
+
+  <section class="muestra">
+    <div class="contenedor">
+      <div class="ventana">
+        <div class="ventana-titulo">
+          <span>Amano — Mostrador</span>
+          <span class="ventana-botones"><i></i><i></i><i></i></span>
+        </div>
+        <div class="ventana-cuerpo">
+
+          <!-- EDITAR: reemplazá este bloque por la captura.
+               <img src="capturas/mostrador.png"
+                    alt="Pantalla de mostrador de Amano"
+                    width="1280" height="800"> -->
+          <div class="sin-captura">
+            <strong>capturas/mostrador.png</strong>
+            <span>reemplazar este bloque por la imagen</span>
+          </div>
+
+        </div>
+      </div>
+      <p class="pie-muestra">Pantalla de mostrador: venta con lector de código de barras.</p>
+    </div>
+  </section>
+
+  <section id="funciones">
+    <div class="contenedor">
+      <h2>Funciones</h2>
+      <p class="titulo-seccion">Lo que resuelve, del mostrador al cierre de caja.</p>
+
+      <div class="funciones">
+
+        <div class="funcion">
+          <h3>Catálogo</h3>
+          <p>
+            Costo por unidad de venta, márgenes por rubro y listas de precio
+            diferenciadas por tipo de cliente.
+          </p>
+        </div>
+
+        <div class="funcion">
+          <h3>Importación de listas</h3>
+          <p>
+            Listas de proveedor desde Excel, con detección del encabezado,
+            mapeo de columnas y comparación contra el catálogo antes de
+            aceptar los cambios.
+          </p>
+        </div>
+
+        <div class="funcion">
+          <h3>Bonificaciones en cadena</h3>
+          <p>
+            De cualquier extensión, interpretadas desde el formato en que las
+            escribe cada proveedor.
+          </p>
+        </div>
+
+        <div class="funcion">
+          <h3>Unidades de compra y de venta</h3>
+          <p>
+            Independientes, con factor de conversión: el producto que se compra
+            por rollo y se vende por metro.
+          </p>
+        </div>
+
+        <div class="funcion">
+          <h3>Mostrador</h3>
+          <p>
+            Venta rápida con lector de código de barras y operación completa
+            por teclado.
+          </p>
+        </div>
+
+        <div class="funcion">
+          <h3>Comprobantes</h3>
+          <p>
+            Presupuesto, pedido, remito y factura, del lado de ventas y del de
+            compras.
+          </p>
+        </div>
+
+        <div class="funcion">
+          <h3>Cuentas corrientes</h3>
+          <p>
+            De clientes y proveedores, con cobros parciales y saldo por cuenta.
+          </p>
+        </div>
+
+        <div class="funcion">
+          <h3>Caja diaria</h3>
+          <p>
+            Movimientos por medio de pago, arqueo y cierre con diferencia.
+          </p>
+        </div>
+
+        <div class="funcion">
+          <h3>Informes</h3>
+          <p>
+            Ventas, rentabilidad, stock y deudas, exportables a Excel.
+          </p>
+        </div>
+
+        <div class="funcion">
+          <h3>Revisión del catálogo</h3>
+          <p>
+            Ocho controles automáticos de consistencia sobre precios,
+            existencias y clasificación.
+          </p>
+        </div>
+
+        <div class="funcion">
+          <h3>Exportación</h3>
+          <p>
+            A Excel y a formatos de ancho fijo, para sistemas que los piden.
+          </p>
+        </div>
+
+        <div class="funcion">
+          <h3>Sin conexión</h3>
+          <p>
+            Base local. No depende de internet ni de un servicio externo para
+            operar.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="tecnica">
+    <div class="contenedor">
+      <h2>Ficha técnica</h2>
+      <p class="titulo-seccion">Cómo está armado.</p>
+
+      <dl class="ficha">
+        <dt>Motor</dt>
+        <dd>
+          Rust sobre SQLite embebido, en modo WAL y con transacciones
+          inmediatas para soportar varias terminales contra la misma base.
+        </dd>
+
+        <dt>Esquema</dt>
+        <dd>
+          Migraciones incrementales numeradas: una base creada con una versión
+          anterior se abre con la versión nueva sin intervención.
+        </dd>
+
+        <dt>Interfaz</dt>
+        <dd>
+          React con TypeScript, sin dependencias de componentes externas.
+          Diseño de escritorio clásico con navegación por teclado.
+        </dd>
+
+        <dt>Empaquetado</dt>
+        <dd>
+          Tauri. Instalador para Windows en formato <code>.exe</code> y
+          <code>.msi</code>, con resolución automática del runtime de la
+          interfaz.
+        </dd>
+
+        <dt>Pruebas</dt>
+        <dd>
+          247 pruebas automáticas sobre un generador determinista que arma un
+          negocio completo y reproduce siempre el mismo escenario.
+        </dd>
+
+        <dt>Plataforma</dt>
+        <dd>Windows 10 y 11, 64 bits.</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section id="contacto">
+    <div class="contenedor">
+      <div class="descarga">
+        <h2>Contacto</h2>
+        <p class="titulo-seccion">Instalación y demostración.</p>
+
+        <p class="parrafo">
+          El instalador se entrega a pedido. Se descarga, se ejecuta, se elige
+          la carpeta y queda instalado; la base de datos se crea vacía en el
+          equipo.
+        </p>
+
+        <div class="acciones">
+          <!-- EDITAR: poné tu dirección de correo. -->
+          <a class="boton" href="mailto:CORREO@EJEMPLO.COM?subject=Amano">
+            Escribir
+          </a>
+        </div>
+
+        <ul class="requisitos">
+          <li>Windows 10 o 11, 64 bits</li>
+          <li>Instalador <code>.exe</code> o <code>.msi</code></li>
+          <li>No requiere conexión a internet para funcionar</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="contenedor">
+    <span>Amano · Sistema de gestión comercial</span>
+    <span class="derecha">
+      <!-- EDITAR: poné tu dirección de correo. -->
+      <a href="mailto:CORREO@EJEMPLO.COM?subject=Amano">Contacto</a>
+    </span>
+  </div>
+</footer>
+
+</body>
+</html>
