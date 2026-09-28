@@ -1,0 +1,48 @@
+---
+import { cifras } from "../config";
+
+const rubros = [
+  "Cables y conductores", "Lámparas LED", "Térmicas y disyuntores", "Tomacorrientes",
+  "Artefactos de iluminación", "Cajas y cañerías", "Tableros", "Herramientas",
+  "Tiras LED", "Reflectores", "Llaves y módulos", "Borneras y terminales",
+];
+
+const formato = (n: number, d: number) =>
+  n.toLocaleString("es-AR", { minimumFractionDigits: d, maximumFractionDigits: d });
+---
+
+<section class="relative border-y border-borde bg-fondo-alto/60">
+  <div class="contenedor grid grid-cols-2 lg:grid-cols-4" data-aparece data-escalonado>
+    {cifras.map((c, i) => (
+      <div
+        class:list={[
+          "px-2 py-8 text-center sm:py-10",
+          i % 2 === 1 && "border-l border-borde",
+          i >= 2 && "max-lg:border-t max-lg:border-borde",
+          i === 2 && "lg:border-l lg:border-borde",
+        ]}
+      >
+        <div
+          class="font-mono text-3xl font-semibold tracking-tight text-tinta sm:text-4xl"
+          data-contar={c.texto ? undefined : c.valor}
+          data-decimales={c.decimales}
+          data-sufijo={c.sufijo}
+        >
+          {c.texto || formato(c.valor, c.decimales) + c.sufijo}
+        </div>
+        <div class="mt-2 text-xs text-tinta-tenue sm:text-sm">{c.rotulo}</div>
+      </div>
+    ))}
+  </div>
+
+  <!-- cinta de rubros -->
+  <div class="relative overflow-hidden border-t border-borde py-4 [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]" aria-label="Rubros que maneja el catálogo">
+    <div class="flex w-max animate-desliza gap-3 motion-reduce:animate-none">
+      {[...rubros, ...rubros].map((r, i) => (
+        <span aria-hidden={i >= rubros.length ? "true" : undefined} class="rounded-full border border-borde bg-white/[0.02] px-4 py-1.5 text-sm whitespace-nowrap text-tinta-tenue">
+          {r}
+        </span>
+      ))}
+    </div>
+  </div>
+</section>

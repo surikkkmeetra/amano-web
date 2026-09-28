@@ -1,0 +1,64 @@
+---
+import VentanaMostrador from "./VentanaMostrador.astro";
+import Icono from "./Icono.astro";
+import { mailto, version, etapa, requisitos } from "../config";
+---
+
+<section class="ruido relative isolate overflow-hidden pt-32 pb-20 sm:pt-40">
+  <!-- fondo: rejilla + dos luces que derivan -->
+  <div class="rejilla-fondo absolute inset-0 -z-10" aria-hidden="true"></div>
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+    <div class="absolute left-1/2 top-[-18rem] h-[42rem] w-[60rem] -translate-x-1/2 animate-deriva rounded-full bg-[radial-gradient(closest-side,rgb(77_110_240/0.45),transparent)] blur-2xl"></div>
+    <div class="absolute right-[-10rem] top-[10rem] h-[28rem] w-[28rem] animate-deriva rounded-full bg-[radial-gradient(closest-side,rgb(94_225_255/0.18),transparent)] blur-2xl [animation-delay:-9s]"></div>
+  </div>
+
+  <div class="contenedor text-center">
+    <p data-aparece class="etiqueta">
+      <span class="relative flex size-2">
+        <span class="absolute inset-0 animate-ping rounded-full bg-ok/60"></span>
+        <span class="relative size-2 rounded-full bg-ok"></span>
+      </span>
+      Versión {version} · {etapa}
+    </p>
+
+    <h1
+      data-aparece
+      class="mx-auto mt-7 max-w-4xl text-[2.6rem] leading-[1.02] font-semibold tracking-[-0.045em] text-balance sm:text-6xl lg:text-7xl"
+    >
+      <span class="degradado">Gestión comercial para casas de </span><span class="degradado-acento">electricidad e iluminación</span>
+    </h1>
+
+    <p data-aparece class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-pretty text-tinta-media sm:text-lg">
+      Catálogo, precios, mostrador, comprobantes, cuentas corrientes, caja e
+      inventario en una aplicación de escritorio para Windows. Funciona sin
+      conexión, sobre una base local, sin cuota mensual.
+    </p>
+
+    <div data-aparece class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+      <a href={mailto} class="boton-primario w-full sm:w-auto">
+        Pedir una demostración
+        <Icono nombre="flecha" class="size-4" />
+      </a>
+      <a href="#precio-real" class="boton-secundario w-full sm:w-auto">Probá cómo calcula</a>
+    </div>
+
+    <ul data-aparece class="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-tinta-tenue">
+      {requisitos.map((r) => (
+        <li class="flex items-center gap-1.5">
+          <Icono nombre="check" class="size-3.5 text-ok" trazo={2.5} />
+          {r}
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <!-- la ventana entra inclinada y se endereza al scrollear -->
+  <div class="contenedor mt-16 sm:mt-20" style="perspective: 1600px" data-aparece>
+    <div id="muestra" class="relative mx-auto max-w-5xl will-change-transform">
+      <div aria-hidden="true" class="absolute -inset-x-10 -top-10 bottom-0 -z-10 rounded-[3rem] bg-[radial-gradient(closest-side,rgb(77_110_240/0.35),transparent)] blur-2xl"></div>
+      <VentanaMostrador />
+      <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 -bottom-px h-10 bg-gradient-to-t from-fondo/80 to-transparent"></div>
+    </div>
+    <p class="mt-4 text-center text-xs text-tinta-tenue">Pantalla de mostrador: venta con lector de código de barras y operación por teclado.</p>
+  </div>
+</section>

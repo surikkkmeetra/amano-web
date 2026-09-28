@@ -1,0 +1,75 @@
+---
+import Icono from "./Icono.astro";
+import { planes, mailto } from "../config";
+
+// Lo que se compara es verdad para Amano por cómo está hecho; del otro lado va
+// lo típico de un sistema por suscripción, sin nombrar a nadie.
+const comparacion = [
+  ["Cuota mensual", "No", "Sí, todos los meses"],
+  ["Funciona sin internet", "Sí", "Depende de la conexión"],
+  ["Dónde están tus datos", "En tu equipo", "En el servidor de otro"],
+  ["Varias terminales", "Incluidas", "Suele cobrarse por usuario"],
+];
+---
+
+<section id="precios" class="relative overflow-hidden py-24 sm:py-32">
+  <div aria-hidden="true" class="pointer-events-none absolute bottom-0 left-1/2 -z-10 h-[30rem] w-[60rem] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(77_110_240/0.2),transparent)] blur-2xl"></div>
+
+  <div class="contenedor">
+    <div class="mx-auto max-w-2xl text-center" data-aparece>
+      <p class="etiqueta">Precios</p>
+      <h2 class="titulo-seccion degradado mt-5">Se paga el programa, no el alquiler.</h2>
+      <p class="bajada-seccion mx-auto">Sin abono mensual, sin servidores y sin sorpresas.</p>
+    </div>
+
+    <div class:list={["mt-14 grid gap-6", planes.length > 1 ? "lg:grid-cols-[repeat(auto-fit,minmax(0,1fr))]" : "lg:grid-cols-[1.1fr_1fr]"]} data-aparece data-escalonado>
+      {planes.map((p) => (
+        <article class:list={["tarjeta flex flex-col p-7 sm:p-9", p.destacado && "border-acento/40 shadow-[0_0_0_1px_rgb(109_139_255/0.15),0_30px_80px_-30px_rgb(77_110_240/0.6)]"]}>
+          {p.destacado && (
+            <div aria-hidden="true" class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-acento to-transparent"></div>
+          )}
+          <h3 class="font-mono text-xs tracking-[0.14em] text-acento-vivo uppercase">{p.nombre}</h3>
+          <p class="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">{p.precio}</p>
+          <p class="mt-2 text-sm text-tinta-tenue">{p.detalle}</p>
+
+          <ul class="mt-8 space-y-3">
+            {p.incluye.map((item) => (
+              <li class="flex items-start gap-3 text-sm text-tinta-media">
+                <span class="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-acento/15 text-acento-vivo">
+                  <Icono nombre="check" class="size-3" trazo={3} />
+                </span>
+                {item}
+              </li>
+            ))}
+          </ul>
+
+          <a href={mailto} class="boton-primario mt-9 w-full">{p.accion}</a>
+        </article>
+      ))}
+
+      {planes.length === 1 && (
+        <div class="tarjeta p-7 sm:p-9">
+          <h3 class="font-mono text-xs tracking-[0.14em] text-tinta-tenue uppercase">Frente a un sistema por suscripción</h3>
+          <table class="mt-6 w-full text-sm">
+            <thead>
+              <tr class="text-left text-xs text-tinta-tenue">
+                <th class="pb-3 font-normal"><span class="sr-only">Aspecto</span></th>
+                <th class="pb-3 font-medium text-tinta">Amano</th>
+                <th class="pb-3 font-normal">Suscripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {comparacion.map(([aspecto, amano, otro]) => (
+                <tr class="border-t border-borde">
+                  <th scope="row" class="py-3.5 pr-3 text-left font-normal text-tinta-tenue">{aspecto}</th>
+                  <td class="py-3.5 pr-3 font-medium text-tinta">{amano}</td>
+                  <td class="py-3.5 text-tinta-tenue">{otro}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  </div>
+</section>

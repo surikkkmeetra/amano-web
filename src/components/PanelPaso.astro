@@ -1,0 +1,193 @@
+---
+// Las cuatro ilustraciones de "Cómo trabaja". Son HTML, no capturas.
+interface Props {
+  n: number;
+}
+const { n } = Astro.props;
+
+const titulos = ["Importar lista · Proveedor Eléctrica Sur", "Artículo · Cable unipolar 2,5 mm²", "Mostrador · Presupuesto 0001-00004812", "Caja diaria · Cierre"];
+
+const cambios = [
+  { art: "Cable unipolar 1,5 mm²", antes: "486,20", ahora: "521,90", d: "+7,3 %", tipo: "sube" },
+  { art: "Cable unipolar 2,5 mm²", antes: "742,50", ahora: "742,50", d: "=", tipo: "igual" },
+  { art: "Cable tipo taller 2×1,5", antes: "1.212,00", ahora: "1.310,40", d: "+8,1 %", tipo: "sube" },
+  { art: "Termocontraíble 6 mm", antes: "215,00", ahora: "198,70", d: "−7,6 %", tipo: "baja" },
+  { art: "Cable subterráneo 4×6", antes: "—", ahora: "9.844,00", d: "nuevo", tipo: "nuevo" },
+];
+
+const listas = [
+  { nombre: "Público", margen: "45 %", precio: "742,50" },
+  { nombre: "Gremio", margen: "30 %", precio: "665,70" },
+  { nombre: "Mayorista", margen: "18 %", precio: "604,20" },
+];
+
+const medios = [
+  { medio: "Efectivo", esperado: "412.380,00", contado: "412.100,00" },
+  { medio: "Débito", esperado: "286.940,50", contado: "286.940,50" },
+  { medio: "Transferencia", esperado: "198.200,00", contado: "198.200,00" },
+  { medio: "Cuenta corriente", esperado: "74.600,00", contado: "74.600,00" },
+];
+---
+
+<div class="flex h-full flex-col overflow-hidden rounded-2xl border border-borde-fuerte bg-[#0c0f17] text-[12px] shadow-[0_30px_80px_-30px_rgb(0_0_0/0.9)]">
+  <div class="flex h-9 shrink-0 items-center gap-2 border-b border-borde bg-white/[0.02] px-3">
+    <span class="flex gap-1.5" aria-hidden="true">
+      <i class="block size-2.5 rounded-full bg-white/15"></i>
+      <i class="block size-2.5 rounded-full bg-white/15"></i>
+      <i class="block size-2.5 rounded-full bg-white/15"></i>
+    </span>
+    <span class="truncate text-[11px] text-tinta-tenue">{titulos[n]}</span>
+  </div>
+
+  <div class="flex-1 p-4 sm:p-5">
+    {n === 0 && (
+      <div>
+        <div class="mb-3 flex flex-wrap gap-2 text-[11px]">
+          <span class="rounded-md bg-amber-400/10 px-2 py-1 text-amber-300">3 cambian</span>
+          <span class="rounded-md bg-acento/10 px-2 py-1 text-acento-vivo">1 nuevo</span>
+          <span class="rounded-md bg-white/5 px-2 py-1 text-tinta-tenue">1 sin cambios</span>
+        </div>
+        <table class="w-full">
+          <thead>
+            <tr class="text-left text-[10px] uppercase tracking-wider text-tinta-tenue">
+              <th class="pb-2 font-medium">Artículo</th>
+              <th class="pb-2 text-right font-medium max-sm:hidden">Actual</th>
+              <th class="pb-2 text-right font-medium">Nuevo</th>
+              <th class="pb-2 text-right font-medium">Δ</th>
+            </tr>
+          </thead>
+          <tbody class="font-mono">
+            {cambios.map((c) => (
+              <tr class="border-t border-borde">
+                <td class="max-w-0 truncate py-2 pr-2 font-sans text-tinta-media">{c.art}</td>
+                <td class="py-2 text-right text-tinta-tenue max-sm:hidden">{c.antes}</td>
+                <td class="py-2 text-right text-tinta">{c.ahora}</td>
+                <td
+                  class:list={[
+                    "py-2 pl-2 text-right whitespace-nowrap",
+                    c.tipo === "sube" && "text-amber-300",
+                    c.tipo === "baja" && "text-ok",
+                    c.tipo === "igual" && "text-tinta-tenue",
+                    c.tipo === "nuevo" && "text-acento-vivo",
+                  ]}
+                >
+                  {c.d}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div class="mt-4 flex justify-end gap-2 text-[11px]">
+          <span class="rounded-md border border-borde px-3 py-1.5 text-tinta-tenue">Revisar</span>
+          <span class="rounded-md bg-acento px-3 py-1.5 font-medium text-white">Aceptar cambios</span>
+        </div>
+      </div>
+    )}
+
+    {n === 1 && (
+      <div class="space-y-4">
+        <div>
+          <p class="text-[10px] uppercase tracking-wider text-tinta-tenue">Lista $ 1.000,00 · Bonif. 30 + 10 + 5</p>
+          <div class="mt-2 flex items-center gap-1.5 font-mono">
+            {["−30 %", "−10 %", "−5 %"].map((d, i) => (
+              <>
+                {i > 0 && <span class="text-tinta-tenue">→</span>}
+                <span class="rounded-md border border-acento/40 bg-acento/10 px-2 py-1 text-acento-vivo">{d}</span>
+              </>
+            ))}
+            <span class="text-tinta-tenue">=</span>
+            <span class="rounded-md bg-white/5 px-2 py-1 text-tinta">−40,15 %</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="rounded-lg border border-borde p-3">
+            <p class="text-[10px] uppercase tracking-wider text-tinta-tenue">Compra</p>
+            <p class="mt-1 font-mono text-tinta">Rollo 100 m</p>
+            <p class="font-mono text-tinta-tenue">$ 51.205,00</p>
+          </div>
+          <div class="rounded-lg border border-borde p-3">
+            <p class="text-[10px] uppercase tracking-wider text-tinta-tenue">Venta · factor 100</p>
+            <p class="mt-1 font-mono text-tinta">Metro</p>
+            <p class="font-mono text-tinta-tenue">costo $ 512,05</p>
+          </div>
+        </div>
+        <div class="space-y-1.5">
+          {listas.map((l) => (
+            <div class="flex items-center justify-between rounded-lg bg-white/[0.03] px-3 py-2">
+              <span class="text-tinta-media">{l.nombre}</span>
+              <span class="font-mono text-tinta-tenue">+{l.margen}</span>
+              <span class="font-mono text-tinta">$ {l.precio}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {n === 2 && (
+      <div class="flex h-full flex-col">
+        <div class="flex items-center gap-2 rounded-md border border-acento/40 bg-acento/[0.06] px-3 py-2 font-mono">
+          <span class="text-tinta-tenue">Código ›</span>
+          <span class="text-tinta">7790001 33012</span>
+          <span class="ml-auto rounded bg-ok/15 px-1.5 py-0.5 font-sans text-[10px] text-ok">leído</span>
+        </div>
+        <div class="mt-3 space-y-1.5 font-mono">
+          {[
+            ["Lámpara LED A60 12 W", "6 u", "13.080,00"],
+            ["Portalámpara E27 baquelita", "6 u", "4.140,00"],
+            ["Cable tipo taller 2×1,5", "10 m", "13.104,00"],
+          ].map(([a, c, s]) => (
+            <div class="flex items-center gap-3 rounded-lg bg-white/[0.03] px-3 py-2">
+              <span class="min-w-0 flex-1 truncate font-sans text-tinta-media">{a}</span>
+              <span class="text-tinta-tenue">{c}</span>
+              <span class="text-tinta">{s}</span>
+            </div>
+          ))}
+        </div>
+        <div class="mt-auto flex items-end justify-between pt-4">
+          <div class="flex gap-1.5">
+            {["Presupuesto", "Remito", "Factura"].map((t, i) => (
+              <span class:list={["rounded-md px-2 py-1 text-[11px]", i === 0 ? "bg-acento/15 text-acento-vivo" : "border border-borde text-tinta-tenue"]}>{t}</span>
+            ))}
+          </div>
+          <div class="text-right">
+            <p class="text-[10px] uppercase tracking-wider text-tinta-tenue">Total</p>
+            <p class="font-mono text-xl font-semibold text-tinta">$ 30.324,00</p>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {n === 3 && (
+      <div class="flex h-full flex-col">
+        <table class="w-full">
+          <thead>
+            <tr class="text-left text-[10px] uppercase tracking-wider text-tinta-tenue">
+              <th class="pb-2 font-medium">Medio</th>
+              <th class="pb-2 text-right font-medium">Esperado</th>
+              <th class="pb-2 text-right font-medium">Contado</th>
+            </tr>
+          </thead>
+          <tbody class="font-mono">
+            {medios.map((m) => (
+              <tr class="border-t border-borde">
+                <td class="py-2 font-sans text-tinta-media">{m.medio}</td>
+                <td class="py-2 text-right text-tinta-tenue">{m.esperado}</td>
+                <td class:list={["py-2 text-right", m.esperado === m.contado ? "text-tinta" : "text-amber-300"]}>{m.contado}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div class="mt-auto grid grid-cols-2 gap-3 pt-4">
+          <div class="rounded-lg border border-borde p-3">
+            <p class="text-[10px] uppercase tracking-wider text-tinta-tenue">Total contado</p>
+            <p class="mt-1 font-mono text-lg text-tinta">$ 971.840,50</p>
+          </div>
+          <div class="rounded-lg border border-amber-400/30 bg-amber-400/[0.06] p-3">
+            <p class="text-[10px] uppercase tracking-wider text-amber-300/80">Diferencia</p>
+            <p class="mt-1 font-mono text-lg text-amber-300">− $ 280,00</p>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+</div>

@@ -1,0 +1,39 @@
+---
+import Icono from "./Icono.astro";
+import { testimonios } from "../config";
+
+const iniciales = (n: string) =>
+  n.split(/\s+/).map((p) => p[0]).slice(0, 2).join("").toUpperCase();
+---
+
+{testimonios.length > 0 && (
+  <section id="testimonios" class="relative border-y border-borde bg-fondo-alto/60 py-24 sm:py-32">
+    <div class="contenedor">
+      <div class="max-w-2xl" data-aparece>
+        <p class="etiqueta">Comercios</p>
+        <h2 class="titulo-seccion degradado mt-5">Lo que dicen del otro lado del mostrador.</h2>
+      </div>
+
+      <div class="mt-14 grid gap-4 md:grid-cols-3" data-aparece data-escalonado>
+        {testimonios.map((t) => (
+          <figure class="tarjeta flex flex-col p-7">
+            {t.ejemplo && (
+              <span class="absolute top-4 right-4 rounded-md border border-dashed border-amber-400/40 px-2 py-0.5 font-mono text-[10px] text-amber-300/80 uppercase">
+                Ejemplo
+              </span>
+            )}
+            <Icono nombre="comillas" class="size-7 text-acento/60" trazo={1.5} />
+            <blockquote class="mt-5 flex-1 leading-relaxed text-pretty text-tinta-media">“{t.texto}”</blockquote>
+            <figcaption class="mt-7 flex items-center gap-3 border-t border-borde pt-5">
+              <span class="grid size-10 place-items-center rounded-full bg-gradient-to-br from-acento/40 to-cian/20 text-sm font-semibold">{iniciales(t.nombre)}</span>
+              <span>
+                <span class="block text-sm font-medium">{t.nombre}</span>
+                <span class="block text-xs text-tinta-tenue">{t.comercio}</span>
+              </span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+)}

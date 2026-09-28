@@ -1,0 +1,117 @@
+---
+import Icono from "./Icono.astro";
+import type { NombreIcono } from "./Icono.astro";
+
+// Las cuatro primeras van grandes, con una pequeña ilustración.
+const destacadas: { icono: NombreIcono; titulo: string; texto: string; clase: string }[] = [
+  {
+    icono: "importar",
+    titulo: "Importación de listas",
+    texto: "Listas de proveedor desde Excel, con detección del encabezado, mapeo de columnas y comparación contra el catálogo antes de aceptar los cambios.",
+    clase: "lg:col-span-4",
+  },
+  {
+    icono: "offline",
+    titulo: "Sin conexión",
+    texto: "Base local. No depende de internet ni de un servicio externo para operar.",
+    clase: "lg:col-span-2",
+  },
+  {
+    icono: "unidades",
+    titulo: "Unidades de compra y de venta",
+    texto: "Independientes, con factor de conversión: el producto que se compra por rollo y se vende por metro.",
+    clase: "lg:col-span-2",
+  },
+  {
+    icono: "mostrador",
+    titulo: "Mostrador",
+    texto: "Venta rápida con lector de código de barras y operación completa por teclado.",
+    clase: "lg:col-span-4",
+  },
+];
+
+const resto: { icono: NombreIcono; titulo: string; texto: string }[] = [
+  { icono: "catalogo", titulo: "Catálogo", texto: "Costo por unidad de venta, márgenes por rubro y listas de precio por tipo de cliente." },
+  { icono: "cadena", titulo: "Bonificaciones en cadena", texto: "De cualquier extensión, interpretadas desde el formato de cada proveedor." },
+  { icono: "comprobantes", titulo: "Comprobantes", texto: "Presupuesto, pedido, remito y factura, de ventas y de compras." },
+  { icono: "cuentas", titulo: "Cuentas corrientes", texto: "De clientes y proveedores, con cobros parciales y saldo por cuenta." },
+  { icono: "caja", titulo: "Caja diaria", texto: "Movimientos por medio de pago, arqueo y cierre con diferencia." },
+  { icono: "informes", titulo: "Informes", texto: "Ventas, rentabilidad, stock y deudas, exportables a Excel." },
+  { icono: "revision", titulo: "Revisión del catálogo", texto: "Ocho controles automáticos de consistencia sobre precios, existencias y clasificación." },
+  { icono: "exportar", titulo: "Exportación", texto: "A Excel y a formatos de ancho fijo, para sistemas que los piden." },
+];
+---
+
+<section id="funciones" class="relative py-24 sm:py-32">
+  <div class="contenedor">
+    <div class="mx-auto max-w-2xl text-center" data-aparece>
+      <p class="etiqueta">Funciones</p>
+      <h2 class="titulo-seccion degradado mt-5">Todo lo que pide el mostrador.</h2>
+      <p class="bajada-seccion mx-auto">Sin módulos aparte ni extras: el programa viene completo.</p>
+    </div>
+
+    <!-- grilla tipo bento -->
+    <div class="mt-14 grid gap-4 lg:grid-cols-6" data-aparece data-escalonado>
+      {destacadas.map((f, i) => (
+        <article class:list={["tarjeta flex flex-col p-6 sm:p-7", f.clase]}>
+          <span class="grid size-10 place-items-center rounded-xl border border-acento/30 bg-acento/10 text-acento-vivo">
+            <Icono nombre={f.icono} />
+          </span>
+          <h3 class="mt-5 text-lg font-semibold tracking-tight">{f.titulo}</h3>
+          <p class="mt-2 max-w-md text-sm leading-relaxed text-tinta-media">{f.texto}</p>
+
+          <div class="mt-6 flex-1" aria-hidden="true">
+            {i === 0 && (
+              <div class="grid grid-cols-[repeat(4,minmax(0,1fr))] gap-1.5 font-mono text-[10px]">
+                {["Código", "Descripción", "Precio", "Bonif."].map((h) => (
+                  <span class="rounded-md border border-acento/40 bg-acento/10 px-2 py-1.5 text-acento-vivo">{h}</span>
+                ))}
+                {["A-1204", "Cable 2,5 mm²", "1.000,00", "30+10+5", "L-0331", "LED A60 12 W", "3.645,00", "25", "T-2020", "Térmica 2×20", "22.990,00", "30/10"].map((c) => (
+                  <span class="truncate rounded-md bg-white/[0.03] px-2 py-1.5 text-tinta-tenue">{c}</span>
+                ))}
+              </div>
+            )}
+            {i === 1 && (
+              <div class="flex h-full min-h-20 items-end gap-2">
+                <div class="flex items-center gap-2 rounded-lg border border-ok/30 bg-ok/10 px-3 py-2 font-mono text-xs text-ok">
+                  <span class="size-1.5 animate-pulso rounded-full bg-ok"></span>
+                  base local · amano.db
+                </div>
+              </div>
+            )}
+            {i === 2 && (
+              <div class="flex items-center gap-2 font-mono text-xs">
+                <span class="rounded-lg bg-white/[0.04] px-3 py-2 text-tinta-media">1 rollo</span>
+                <span class="text-tinta-tenue">× 100 →</span>
+                <span class="rounded-lg border border-acento/40 bg-acento/10 px-3 py-2 text-acento-vivo">100 m</span>
+              </div>
+            )}
+            {i === 3 && (
+              <div class="flex flex-wrap gap-1.5">
+                {["F2 Buscar", "F4 Cliente", "F6 Descuento", "F9 Cobrar", "Esc Cancelar", "↑↓ Renglón"].map((k) => {
+                  const [tecla, ...accion] = k.split(" ");
+                  return (
+                    <span class="inline-flex items-center gap-1.5 rounded-lg bg-white/[0.03] px-2 py-1.5 text-xs text-tinta-tenue">
+                      <kbd class="rounded border border-borde-fuerte bg-white/5 px-1.5 py-0.5 font-mono text-[10px] text-tinta-media">{tecla}</kbd>
+                      {accion.join(" ")}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-aparece data-escalonado>
+      {resto.map((f) => (
+        <article class="tarjeta p-5">
+          <Icono nombre={f.icono} class="size-5 text-acento-vivo" />
+          <h3 class="mt-4 font-semibold tracking-tight">{f.titulo}</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-tinta-tenue">{f.texto}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
