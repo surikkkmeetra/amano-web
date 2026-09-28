@@ -1,0 +1,204 @@
+---
+const ejemplos = ["35%", "30 + 10 + 5", "30/10/5", "-30 -10", "Bonif. 25%", "12,5%", "60% hasta agotar stock"];
+---
+
+<section id="precio-real" class="relative overflow-hidden py-24 sm:py-32">
+  <div aria-hidden="true" class="pointer-events-none absolute top-1/3 left-[-15rem] -z-10 size-[36rem] rounded-full bg-[radial-gradient(closest-side,rgb(77_110_240/0.18),transparent)] blur-2xl"></div>
+
+  <div class="contenedor">
+    <div class="max-w-2xl" data-aparece>
+      <p class="etiqueta">El precio real</p>
+      <h2 class="titulo-seccion degradado mt-5">La bonificación no se suma. Se&nbsp;encadena.</h2>
+      <p class="bajada-seccion">
+        Encima del precio de lista van descuentos, y cada uno cae sobre lo que
+        quedó del anterior. Escribilo como lo escribe tu proveedor y mirá el
+        resultado.
+      </p>
+    </div>
+
+    <div data-aparece class="tarjeta mt-12 grid lg:grid-cols-2">
+      <!-- entrada -->
+      <div class="border-borde p-6 sm:p-8 max-lg:border-b lg:border-r">
+        <label for="calc-bonif" class="text-xs font-medium tracking-wider text-tinta-tenue uppercase">Bonificación, como viene en la lista</label>
+        <input
+          id="calc-bonif"
+          type="text"
+          value="30 + 10 + 5"
+          autocomplete="off"
+          spellcheck="false"
+          aria-describedby="calc-ayuda"
+          class="mt-2 w-full rounded-xl border border-borde-fuerte bg-fondo/60 px-4 py-3.5 font-mono text-lg text-tinta transition outline-none focus:border-acento/70 focus:ring-4 focus:ring-acento/15"
+        />
+
+        <div class="mt-3 flex flex-wrap gap-1.5" id="calc-ejemplos">
+          {ejemplos.map((e) => (
+            <button type="button" class="rounded-lg border border-borde bg-white/[0.02] px-2.5 py-1 font-mono text-xs text-tinta-tenue transition hover:border-acento/50 hover:text-tinta aria-pressed:border-acento/60 aria-pressed:bg-acento/10 aria-pressed:text-acento-vivo" aria-pressed="false">
+              {e}
+            </button>
+          ))}
+        </div>
+
+        <p id="calc-ayuda" class="mt-4 text-sm leading-relaxed text-tinta-tenue">
+          Cada proveedor la escribe distinto. El sistema la interpreta igual, y
+          descarta lo que no puede ser un porcentaje: el año de la lista, el
+          número de lista, el texto suelto.
+        </p>
+
+        <label for="calc-lista" class="mt-7 block text-xs font-medium tracking-wider text-tinta-tenue uppercase">Precio de lista</label>
+        <div class="relative mt-2">
+          <span class="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 font-mono text-lg text-tinta-tenue">$</span>
+          <input
+            id="calc-lista"
+            type="text"
+            inputmode="decimal"
+            value="1000"
+            autocomplete="off"
+            class="w-full rounded-xl border border-borde-fuerte bg-fondo/60 py-3.5 pr-4 pl-9 font-mono text-lg text-tinta transition outline-none focus:border-acento/70 focus:ring-4 focus:ring-acento/15"
+          />
+        </div>
+      </div>
+
+      <!-- resultado -->
+      <div class="bg-white/[0.015] p-6 sm:p-8" aria-live="polite">
+        <p class="text-xs font-medium tracking-wider text-tinta-tenue uppercase">Cadena interpretada</p>
+
+        <!-- barras: el precio después de cada descuento -->
+        <div id="calc-barras" class="mt-4 space-y-2"></div>
+
+        <dl class="mt-6 divide-y divide-borde border-y border-borde">
+          <div class="flex items-center justify-between py-3">
+            <dt class="text-sm text-tinta-tenue">Si se sumaran los descuentos</dt>
+            <dd id="calc-sumado" class="font-mono text-tinta-tenue line-through decoration-red-400/60">—</dd>
+          </div>
+          <div class="flex items-center justify-between py-4">
+            <dt class="text-sm font-medium text-tinta">Descuento real</dt>
+            <dd id="calc-real" class="degradado-acento font-mono text-3xl font-semibold tracking-tight">—</dd>
+          </div>
+          <div class="flex items-center justify-between py-3">
+            <dt class="text-sm text-tinta-tenue">Costo final</dt>
+            <dd id="calc-costo" class="font-mono text-lg text-tinta">—</dd>
+          </div>
+        </dl>
+
+        <p id="calc-nota" class="mt-5 rounded-xl border border-acento/25 bg-acento/[0.07] p-4 text-sm leading-relaxed text-tinta-media empty:hidden"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  /* Es la misma lectura que hace el programa: junta los números, acepta la
+     coma decimal y descarta lo que no puede ser un porcentaje. */
+  function cadenaDe(texto: string): number[] {
+    const salida: number[] = [];
+    let numero = "";
+
+    const cerrar = () => {
+      if (!numero) return;
+      const valor = parseFloat(numero.replace(/\.$/, ""));
+      if (Number.isFinite(valor) && valor > 0 && valor <= 100) salida.push(valor);
+      numero = "";
+    };
+
+    for (let i = 0; i <= texto.length; i++) {
+      const c = texto.charAt(i);
+      if (c >= "0" && c <= "9") numero += c;
+      else if ((c === "," || c === ".") && numero) {
+        if (numero.includes(".")) cerrar();
+        else numero += ".";
+      } else cerrar();
+    }
+    return salida;
+  }
+
+  const fmt = (n: number, d = 2) =>
+    n.toLocaleString("es-AR", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const pct = (n: number) => `${fmt(n)} %`;
+  const pesos = (n: number) => `$ ${fmt(n)}`;
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const entrada = $<HTMLInputElement>("calc-bonif");
+  const lista = $<HTMLInputElement>("calc-lista");
+  const barras = $("calc-barras");
+  const elSumado = $("calc-sumado");
+  const elReal = $("calc-real");
+  const elCosto = $("calc-costo");
+  const elNota = $("calc-nota");
+  const botones = document.querySelectorAll<HTMLButtonElement>("#calc-ejemplos button");
+
+  function renglon(rotulo: string, valor: number, precio: number, claseBarra: string) {
+    const fila = document.createElement("div");
+    fila.className = "grid grid-cols-[4.5rem_1fr_6.5rem] items-center gap-3 font-mono text-xs";
+    const r = document.createElement("span");
+    r.className = "text-tinta-tenue";
+    r.textContent = rotulo;
+    const pista = document.createElement("div");
+    pista.className = "h-2 overflow-hidden rounded-full bg-white/[0.05]";
+    const barra = document.createElement("div");
+    barra.className = `h-full rounded-full transition-[width] duration-700 ease-out ${claseBarra}`;
+    barra.style.width = "0%";
+    pista.appendChild(barra);
+    const v = document.createElement("span");
+    v.className = "text-right text-tinta-media";
+    v.textContent = pesos(valor);
+    fila.append(r, pista, v);
+    barras.appendChild(fila);
+    requestAnimationFrame(() => {
+      barra.style.width = `${precio > 0 ? Math.max((valor / precio) * 100, 0.5) : 0}%`;
+    });
+  }
+
+  function recalcular() {
+    const cadena = cadenaDe(entrada.value);
+    const precio = parseFloat(lista.value.replace(/\./g, "").replace(",", ".")) || 0;
+
+    botones.forEach((b) => b.setAttribute("aria-pressed", String(b.textContent?.trim() === entrada.value.trim())));
+
+    barras.textContent = "";
+    renglon("Lista", precio, precio, "bg-white/25");
+    let actual = precio;
+    cadena.forEach((d) => {
+      actual *= 1 - d / 100;
+      renglon(`−${fmt(d, d % 1 ? 1 : 0)} %`, actual, precio, "bg-gradient-to-r from-acento-hondo to-acento");
+    });
+    if (!cadena.length) {
+      const vacio = document.createElement("p");
+      vacio.className = "text-sm text-tinta-tenue";
+      vacio.textContent = "Sin descuentos reconocibles.";
+      barras.appendChild(vacio);
+    }
+
+    const sumado = Math.min(cadena.reduce((a, b) => a + b, 0), 100);
+    const real = (1 - cadena.reduce((f, d) => f * (1 - d / 100), 1)) * 100;
+
+    elSumado.textContent = cadena.length > 1 ? pct(sumado) : "—";
+    elReal.textContent = pct(real);
+    elCosto.textContent = pesos(Math.round(actual * 100) / 100);
+
+    if (cadena.length > 1) {
+      const dif = sumado - real;
+      elNota.innerHTML = "";
+      elNota.append(
+        "Sumar los descuentos da ",
+        Object.assign(document.createElement("b"), { className: "text-tinta", textContent: pct(sumado) }),
+        ". El verdadero es ",
+        Object.assign(document.createElement("b"), { className: "text-tinta", textContent: pct(real) }),
+        `. La diferencia es de ${fmt(dif)} puntos: sobre ${pesos(precio)} son `,
+        Object.assign(document.createElement("b"), { className: "text-acento-vivo", textContent: pesos((precio * dif) / 100) }),
+        " por artículo, y sobre un catálogo entero eso es plata.",
+      );
+    } else {
+      elNota.textContent = "";
+    }
+  }
+
+  botones.forEach((b) =>
+    b.addEventListener("click", () => {
+      entrada.value = b.textContent?.trim() ?? "";
+      recalcular();
+    }),
+  );
+  entrada.addEventListener("input", recalcular);
+  lista.addEventListener("input", recalcular);
+  recalcular();
+</script>

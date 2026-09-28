@@ -1,0 +1,52 @@
+---
+import Icono from "./Icono.astro";
+import { mailto, correo, requisitos } from "../config";
+---
+
+<section id="contacto" class="relative pb-24 sm:pb-32">
+  <div class="contenedor">
+    <div data-aparece class="ruido relative isolate overflow-hidden rounded-3xl border border-borde-fuerte bg-panel px-6 py-16 text-center sm:px-12 sm:py-24">
+      <div aria-hidden="true" class="rejilla-fondo absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_60%_70%_at_50%_100%,#000,transparent)]"></div>
+      <div aria-hidden="true" class="absolute bottom-[-12rem] left-1/2 -z-10 h-[26rem] w-[44rem] -translate-x-1/2 animate-deriva rounded-full bg-[radial-gradient(closest-side,rgb(77_110_240/0.5),transparent)] blur-2xl"></div>
+
+      <h2 class="titulo-seccion degradado mx-auto max-w-3xl">Vení a verlo funcionando.</h2>
+      <p class="bajada-seccion mx-auto">
+        El instalador se entrega a pedido. Se descarga, se ejecuta, se elige la
+        carpeta y queda instalado; la base de datos se crea vacía en el equipo.
+      </p>
+
+      <div class="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <a href={mailto} class="boton-primario w-full sm:w-auto">
+          <Icono nombre="correo" class="size-4" />
+          Pedir una demostración
+        </a>
+        <a href="#precio-real" class="boton-secundario w-full sm:w-auto">Probar la calculadora</a>
+      </div>
+
+      <ul class="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-tinta-tenue">
+        {requisitos.map((r) => (
+          <li class="flex items-center gap-1.5">
+            <Icono nombre="check" class="size-3.5 text-ok" trazo={2.5} />
+            {r}
+          </li>
+        ))}
+      </ul>
+      <p class="mt-6 font-mono text-xs text-tinta-tenue">{correo.toLowerCase()}</p>
+    </div>
+  </div>
+</section>
+
+<footer class="border-t border-borde">
+  <div class="contenedor flex flex-col items-center justify-between gap-4 py-8 text-sm text-tinta-tenue sm:flex-row">
+    <div class="flex items-center gap-2.5">
+      <span class="grid size-6 place-items-center rounded-md bg-gradient-to-br from-acento to-acento-hondo text-xs font-bold text-white">A</span>
+      Amano · Sistema de gestión comercial
+    </div>
+    <nav class="flex gap-5" aria-label="Pie">
+      <a href="#funciones" class="hover:text-tinta">Funciones</a>
+      <a href="#precios" class="hover:text-tinta">Precios</a>
+      <a href="#preguntas" class="hover:text-tinta">Preguntas</a>
+      <a href={mailto} class="hover:text-tinta">Contacto</a>
+    </nav>
+  </div>
+</footer>

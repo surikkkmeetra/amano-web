@@ -1,0 +1,119 @@
+---
+// Ilustración de la pantalla de mostrador, dibujada en HTML hasta que haya
+// capturas reales. Para usar una captura, reemplazar el contenido de
+// <div class="cuerpo"> por:
+//   <img src={`${import.meta.env.BASE_URL}capturas/mostrador.png`} alt="..." />
+
+const secciones = ["Mostrador", "Catálogo", "Comprobantes", "Cuentas", "Caja", "Informes"];
+
+const renglones = [
+  { cod: "7790001 12045", art: "Cable unipolar 2,5 mm² · rojo", cant: "25 m", pu: "742,50", sub: "18.562,50" },
+  { cod: "7790001 33012", art: "Lámpara LED A60 12 W · fría", cant: "6 u", pu: "2.180,00", sub: "13.080,00" },
+  { cod: "7790001 50877", art: "Térmica bipolar 2×20 A", cant: "1 u", pu: "14.950,00", sub: "14.950,00" },
+  { cod: "7790001 61140", art: "Caja rectangular PVC 5×10", cant: "10 u", pu: "395,00", sub: "3.950,00" },
+  { cod: "7790001 70231", art: "Tomacorriente doble 10 A", cant: "4 u", pu: "3.420,00", sub: "13.680,00" },
+];
+
+const atajos = [
+  ["F2", "Buscar"],
+  ["F4", "Cliente"],
+  ["F6", "Descuento"],
+  ["F9", "Cobrar"],
+];
+---
+
+<div class="ventana relative overflow-hidden rounded-xl border border-borde-fuerte bg-[#0c0f17] text-left shadow-[0_40px_120px_-30px_rgb(0_0_0/0.9),0_0_0_1px_rgb(255_255_255/0.02)]">
+  <!-- barra de título -->
+  <div class="flex h-9 items-center justify-between border-b border-borde bg-gradient-to-r from-[#0a246a] via-[#1a3a9a] to-[#3a6ae0] px-3">
+    <span class="text-[11px] font-semibold tracking-wide text-white/90">Amano — Mostrador</span>
+    <span class="flex gap-1.5" aria-hidden="true">
+      <i class="block size-3 rounded-[3px] bg-white/25"></i>
+      <i class="block size-3 rounded-[3px] bg-white/25"></i>
+      <i class="block size-3 rounded-[3px] bg-white/40"></i>
+    </span>
+  </div>
+
+  <div class="cuerpo grid grid-cols-[150px_1fr] text-[11px] max-sm:grid-cols-1">
+    <!-- lateral -->
+    <aside class="border-r border-borde bg-white/[0.015] p-2 max-sm:hidden">
+      {secciones.map((s, i) => (
+        <div class:list={["mb-0.5 rounded-md px-2.5 py-1.5", i === 0 ? "bg-acento/15 text-acento-vivo" : "text-tinta-tenue"]}>
+          {s}
+        </div>
+      ))}
+    </aside>
+
+    <div class="flex min-w-0 flex-col">
+      <!-- búsqueda -->
+      <div class="flex items-center gap-2 border-b border-borde p-3">
+        <div class="relative flex h-8 flex-1 items-center overflow-hidden rounded-md border border-acento/40 bg-acento/[0.06] px-2.5 font-mono text-tinta">
+          <span class="text-tinta-tenue">Código ›&nbsp;</span>
+          <span data-escaneo-texto>7790001 70231</span>
+          <span class="ml-0.5 inline-block h-3.5 w-px animate-pulso bg-acento-vivo"></span>
+          <span class="linea-escaneo pointer-events-none absolute inset-y-0 w-16 bg-gradient-to-r from-transparent via-cian/40 to-transparent"></span>
+        </div>
+        <span class="rounded-md border border-borde px-2 py-1.5 text-tinta-tenue max-sm:hidden">Cliente: Consumidor final</span>
+      </div>
+
+      <!-- tabla -->
+      <div class="overflow-hidden">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="text-left text-[10px] uppercase tracking-wider text-tinta-tenue">
+              <th class="px-3 py-2 font-medium max-md:hidden">Código</th>
+              <th class="w-[42%] px-3 py-2 font-medium">Artículo</th>
+              <th class="px-3 py-2 text-right font-medium">Cant.</th>
+              <th class="px-3 py-2 text-right font-medium max-md:hidden">P. unit.</th>
+              <th class="px-3 py-2 text-right font-medium">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody class="font-mono">
+            {renglones.map((r, i) => (
+              <tr
+                data-renglon
+                class:list={[
+                  "border-t border-borde",
+                  i === renglones.length - 1 && "bg-acento/10 text-tinta",
+                  i !== renglones.length - 1 && "text-tinta-media",
+                ]}
+              >
+                <td class="px-3 py-2 whitespace-nowrap max-md:hidden">{r.cod}</td>
+                <td class="max-w-0 truncate px-3 py-2 font-sans">{r.art}</td>
+                <td class="px-3 py-2 text-right whitespace-nowrap">{r.cant}</td>
+                <td class="px-3 py-2 text-right whitespace-nowrap max-md:hidden">{r.pu}</td>
+                <td class="px-3 py-2 text-right whitespace-nowrap">{r.sub}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- totales -->
+      <div class="mt-auto flex flex-wrap items-end justify-between gap-3 border-t border-borde bg-white/[0.015] p-3">
+        <div class="flex flex-wrap gap-1.5">
+          {atajos.map(([tecla, accion]) => (
+            <span class="inline-flex items-center gap-1 text-tinta-tenue">
+              <kbd class="rounded border border-borde-fuerte bg-white/5 px-1.5 py-0.5 font-mono text-[10px] text-tinta-media">{tecla}</kbd>
+              {accion}
+            </span>
+          ))}
+        </div>
+        <div class="text-right">
+          <div class="text-[10px] uppercase tracking-wider text-tinta-tenue">Total · 5 artículos</div>
+          <div class="font-mono text-xl font-semibold text-tinta sm:text-2xl">$ 64.222,50</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .linea-escaneo {
+    left: -4rem;
+    animation: escanear 2.8s cubic-bezier(.6, 0, .3, 1) infinite;
+  }
+  @keyframes escanear {
+    0%, 30% { left: -4rem; }
+    70%, 100% { left: 100%; }
+  }
+</style>

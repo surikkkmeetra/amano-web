@@ -1,0 +1,56 @@
+---
+import Icono from "./Icono.astro";
+import { mailto } from "../config";
+
+const enlaces = [
+  { href: "#como-trabaja", texto: "Cómo trabaja" },
+  { href: "#precio-real", texto: "El precio real" },
+  { href: "#funciones", texto: "Funciones" },
+  { href: "#precios", texto: "Precios" },
+  { href: "#preguntas", texto: "Preguntas" },
+];
+---
+
+<header
+  id="barra"
+  class="fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-300 border-b border-transparent data-[pegada]:border-borde data-[pegada]:bg-fondo/70 data-[pegada]:backdrop-blur-xl"
+>
+  <div class="contenedor flex h-16 items-center justify-between gap-6">
+    <a href="#" class="flex items-center gap-2.5 font-semibold tracking-tight" aria-label="Amano, inicio">
+      <span class="grid size-7 place-items-center rounded-lg bg-gradient-to-br from-acento to-acento-hondo text-sm font-bold text-white shadow-[0_0_20px_-4px_var(--color-acento)]">A</span>
+      Amano
+    </a>
+
+    <nav class="hidden items-center gap-1 md:flex" aria-label="Principal">
+      {enlaces.map((e) => (
+        <a href={e.href} class="rounded-lg px-3 py-2 text-sm text-tinta-media transition hover:bg-white/5 hover:text-tinta">
+          {e.texto}
+        </a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a href={mailto} class="boton-primario hidden !py-2 !px-4 sm:inline-flex">Pedir demostración</a>
+      <button
+        id="abrir-menu"
+        type="button"
+        class="grid size-10 place-items-center rounded-lg border border-borde text-tinta-media md:hidden"
+        aria-expanded="false"
+        aria-controls="menu-movil"
+        aria-label="Abrir menú"
+      >
+        <Icono nombre="menu" class="size-5 [[aria-expanded=true]>&]:hidden" />
+        <Icono nombre="cerrar" class="hidden size-5 [[aria-expanded=true]>&]:block" />
+      </button>
+    </div>
+  </div>
+
+  <div id="menu-movil" hidden class="border-t border-borde bg-fondo/95 backdrop-blur-xl md:hidden">
+    <nav class="contenedor flex flex-col py-3" aria-label="Principal, móvil">
+      {enlaces.map((e) => (
+        <a href={e.href} class="rounded-lg px-2 py-3 text-base text-tinta-media hover:text-tinta">{e.texto}</a>
+      ))}
+      <a href={mailto} class="boton-primario mt-2 mb-2">Pedir demostración</a>
+    </nav>
+  </div>
+</header>

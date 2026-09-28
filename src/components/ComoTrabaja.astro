@@ -1,0 +1,95 @@
+---
+// Historia en cuatro pasos. En pantallas anchas el panel de la derecha queda
+// fijo y cambia según el paso que está a la vista; en el celular cada paso
+// lleva su panel debajo.
+import Icono from "./Icono.astro";
+import PanelPaso from "./PanelPaso.astro";
+
+const pasos = [
+  {
+    icono: "importar",
+    titulo: "Importás la lista del proveedor",
+    texto:
+      "Desde el Excel que te manda, como venga. Amano encuentra el encabezado, te deja elegir qué columna es qué y te muestra qué cambia contra tu catálogo antes de aceptar nada.",
+  },
+  {
+    icono: "cadena",
+    titulo: "El costo sale bien de entrada",
+    texto:
+      "Las bonificaciones se encadenan como corresponde, la unidad de compra se convierte a la de venta y el margen de cada rubro arma los precios de cada lista.",
+  },
+  {
+    icono: "mostrador",
+    titulo: "Vendés en el mostrador",
+    texto:
+      "Con el lector de código de barras y el teclado, sin tocar el mouse. Presupuesto, pedido, remito o factura, y a la cuenta corriente si hace falta.",
+  },
+  {
+    icono: "caja",
+    titulo: "Cerrás la caja",
+    texto:
+      "Movimientos por medio de pago, arqueo y cierre con diferencia. Y los informes de ventas, rentabilidad, stock y deudas, listos para llevar a Excel.",
+  },
+] as const;
+---
+
+<section id="como-trabaja" class="relative py-24 sm:py-32">
+  <div class="contenedor">
+    <div class="max-w-2xl" data-aparece>
+      <p class="etiqueta">Cómo trabaja</p>
+      <h2 class="titulo-seccion degradado mt-5">De la lista del proveedor al cierre de caja.</h2>
+      <p class="bajada-seccion">Todo el recorrido de un comercio, en un solo programa que conoce cómo trabaja el rubro.</p>
+    </div>
+
+    <div class="mt-16 grid gap-12 lg:grid-cols-[1fr_1.15fr] lg:gap-16">
+      <!-- pasos -->
+      <ol class="relative">
+        <!-- línea de progreso -->
+        <div aria-hidden="true" class="absolute top-2 bottom-2 left-[19px] w-px bg-borde max-lg:hidden">
+          <div id="progreso-pasos" class="h-full origin-top scale-y-0 bg-gradient-to-b from-acento to-cian"></div>
+        </div>
+
+        {pasos.map((p, i) => (
+          <li data-paso={i} class="group relative lg:flex lg:min-h-[62vh] lg:items-center">
+            <div class="lg:pl-16">
+              <span class="grid size-10 place-items-center rounded-xl border border-borde bg-panel text-tinta-tenue transition-all duration-500 group-data-[activo]:border-acento/60 group-data-[activo]:bg-acento/15 group-data-[activo]:text-acento-vivo group-data-[activo]:shadow-[0_0_24px_-4px_var(--color-acento)] lg:absolute lg:top-1/2 lg:left-0 lg:-translate-y-1/2">
+                <Icono nombre={p.icono} class="size-5" />
+              </span>
+              <p class="mt-5 font-mono text-xs text-tinta-tenue lg:mt-0">Paso {i + 1} de {pasos.length}</p>
+              <h3 class="mt-2 text-2xl font-semibold tracking-tight text-tinta-media transition-colors duration-500 group-data-[activo]:text-tinta sm:text-3xl">
+                {p.titulo}
+              </h3>
+              <p class="mt-3 max-w-md leading-relaxed text-tinta-tenue transition-colors duration-500 group-data-[activo]:text-tinta-media">
+                {p.texto}
+              </p>
+              <!-- panel en línea, solo celular / tablet -->
+              <div class="mt-8 lg:hidden">
+                <div class="panel-paso" data-panel-movil>
+                  <PanelPaso n={i} />
+                </div>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ol>
+
+      <!-- panel fijo, escritorio -->
+      <div class="max-lg:hidden">
+        <div class="sticky top-[calc(50vh-13rem)] h-[26rem]">
+          <div aria-hidden="true" class="absolute -inset-8 -z-10 rounded-[2.5rem] bg-[radial-gradient(closest-side,rgb(77_110_240/0.22),transparent)] blur-xl"></div>
+          {[0, 1, 2, 3].map((i) => (
+            <div
+              data-panel={i}
+              class:list={[
+                "panel-paso absolute inset-0 transition-all duration-500 ease-out",
+                i === 0 ? "opacity-100" : "pointer-events-none translate-y-4 scale-[0.98] opacity-0",
+              ]}
+            >
+              <PanelPaso n={i} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

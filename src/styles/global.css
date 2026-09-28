@@ -1,0 +1,182 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
+/* --- tokens --------------------------------------------------------------- */
+
+@theme {
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", monospace;
+
+  --color-fondo: #06070b;
+  --color-fondo-alto: #0b0d14;
+  --color-panel: #10131c;
+  --color-panel-alto: #161a26;
+  --color-borde: rgb(255 255 255 / 0.08);
+  --color-borde-fuerte: rgb(255 255 255 / 0.14);
+
+  --color-tinta: #eef0f6;
+  --color-tinta-media: #a3a9b8;
+  --color-tinta-tenue: #6b7285;
+
+  /* El azul sale de la barra de título del programa (#0a246a), aclarado
+     para que tenga contraste sobre fondo oscuro. */
+  --color-acento: #6d8bff;
+  --color-acento-vivo: #8fa6ff;
+  --color-acento-hondo: #2a4fd6;
+  --color-cian: #5ee1ff;
+  --color-ok: #4ade80;
+
+  --animate-deriva: deriva 18s ease-in-out infinite alternate;
+  --animate-brillo: brillo 3.2s linear infinite;
+  --animate-pulso: pulso 2s ease-in-out infinite;
+  --animate-desliza: desliza 40s linear infinite;
+}
+
+@keyframes deriva {
+  from { transform: translate3d(-6%, -4%, 0) scale(1); }
+  to   { transform: translate3d(6%, 5%, 0) scale(1.12); }
+}
+@keyframes brillo {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+@keyframes pulso {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: .45; transform: scale(.8); }
+}
+@keyframes desliza {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* --- base ----------------------------------------------------------------- */
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-fondo);
+    color: var(--color-tinta);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: rgb(109 139 255 / 0.35);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-acento);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* --- piezas reutilizables ------------------------------------------------- */
+
+@layer components {
+  .contenedor {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Texto con degradado, para los titulares. */
+  .degradado {
+    background: linear-gradient(180deg, #fff 20%, #a9b3cc 110%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .degradado-acento {
+    background: linear-gradient(100deg, var(--color-acento-vivo), var(--color-cian) 60%, var(--color-acento-vivo));
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: var(--animate-brillo);
+    animation-duration: 8s;
+  }
+
+  .etiqueta {
+    @apply inline-flex items-center gap-2 rounded-full border border-borde bg-white/[0.03] px-3 py-1 font-mono text-xs uppercase tracking-[0.14em] text-tinta-media;
+  }
+
+  .boton-primario {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-medium transition duration-200 select-none text-white;
+    background: linear-gradient(180deg, #7c97ff, #4d6ef0);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.25),
+      0 0 0 1px rgb(109 139 255 / 0.5),
+      0 8px 30px -8px rgb(77 110 240 / 0.8);
+  }
+  .boton-primario:hover {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.3),
+      0 0 0 1px rgb(143 166 255 / 0.8),
+      0 10px 40px -6px rgb(77 110 240 / 0.95);
+    transform: translateY(-1px);
+  }
+  .boton-secundario {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-medium transition duration-200 select-none border border-borde-fuerte bg-white/[0.03] text-tinta hover:border-white/25 hover:bg-white/[0.07];
+  }
+
+  /* Tarjeta con borde que se ilumina donde está el cursor.
+     El script de efectos escribe --x e --y sobre cada .tarjeta. */
+  .tarjeta {
+    @apply relative overflow-hidden rounded-2xl border border-borde bg-panel/70;
+    isolation: isolate;
+  }
+  .tarjeta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity .3s;
+    background: radial-gradient(420px circle at var(--x, 50%) var(--y, 50%), rgb(109 139 255 / 0.12), transparent 45%);
+  }
+  .tarjeta:hover::before { opacity: 1; }
+
+  .rejilla-fondo {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 30%, transparent 75%);
+  }
+
+  .ruido::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: .035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .titulo-seccion {
+    @apply text-3xl font-semibold tracking-tight text-balance sm:text-5xl;
+    letter-spacing: -0.035em;
+  }
+  .bajada-seccion {
+    @apply mt-4 max-w-2xl text-base leading-relaxed text-pretty text-tinta-media sm:text-lg;
+  }
+}
+
+/* Los elementos animados arrancan ocultos solo si hay JS y movimiento. */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-aparece] { opacity: 0; }
+}

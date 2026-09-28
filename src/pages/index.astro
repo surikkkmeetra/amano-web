@@ -1,0 +1,37 @@
+---
+import Base from "../layouts/Base.astro";
+import Navegacion from "../components/Navegacion.astro";
+import Portada from "../components/Portada.astro";
+import Cifras from "../components/Cifras.astro";
+import ComoTrabaja from "../components/ComoTrabaja.astro";
+import Calculadora from "../components/Calculadora.astro";
+import Funciones from "../components/Funciones.astro";
+import Tecnica from "../components/Tecnica.astro";
+import Testimonios from "../components/Testimonios.astro";
+import Precios from "../components/Precios.astro";
+import Preguntas from "../components/Preguntas.astro";
+import Cierre from "../components/Cierre.astro";
+---
+
+<Base
+  titulo="Amano — Gestión comercial para casas de electricidad e iluminación"
+  descripcion="Catálogo, precios, mostrador, comprobantes, cuentas corrientes, caja e inventario. Aplicación de escritorio para Windows que funciona sin conexión y sin cuota mensual."
+>
+  <Navegacion />
+  <main>
+    <Portada />
+    <Cifras />
+    <ComoTrabaja />
+    <Calculadora />
+    <Funciones />
+    <Tecnica />
+    <Testimonios />
+    <Precios />
+    <Preguntas />
+  </main>
+  <Cierre />
+</Base>
+
+<script>
+  import "../scripts/efectos.ts";
+</script>

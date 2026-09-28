@@ -1,0 +1,48 @@
+---
+import Icono from "./Icono.astro";
+import type { NombreIcono } from "./Icono.astro";
+
+const ficha: { icono: NombreIcono; rotulo: string; titulo: string; texto: string }[] = [
+  { icono: "motor", rotulo: "Motor", titulo: "Rust + SQLite", texto: "Base embebida en modo WAL, con transacciones inmediatas para soportar varias terminales contra la misma base." },
+  { icono: "capas", rotulo: "Esquema", titulo: "Migraciones numeradas", texto: "Una base creada con una versión anterior se abre con la nueva sin intervención." },
+  { icono: "interfaz", rotulo: "Interfaz", titulo: "React + TypeScript", texto: "Sin dependencias de componentes externas. Diseño de escritorio clásico con navegación por teclado." },
+  { icono: "paquete", rotulo: "Empaquetado", titulo: "Tauri", texto: "Instalador .exe y .msi, con resolución automática del runtime de la interfaz." },
+  { icono: "pruebas", rotulo: "Pruebas", titulo: "247 automáticas", texto: "Sobre un generador determinista que arma un negocio completo y reproduce siempre el mismo escenario." },
+  { icono: "windows", rotulo: "Plataforma", titulo: "Windows 10 y 11", texto: "64 bits." },
+];
+---
+
+<section id="tecnica" class="relative border-y border-borde bg-fondo-alto/60 py-24 sm:py-32">
+  <div class="contenedor grid gap-12 lg:grid-cols-[1fr_2fr] lg:gap-16">
+    <div data-aparece class="lg:sticky lg:top-28 lg:self-start">
+      <p class="etiqueta">Ficha técnica</p>
+      <h2 class="titulo-seccion degradado mt-5">Hecho para durar.</h2>
+      <p class="bajada-seccion">Rápido, liviano y sin servidores: un programa nativo que abre 35.000 artículos en milisegundos.</p>
+
+      <!-- una "terminal" decorativa -->
+      <div class="mt-8 overflow-hidden rounded-xl border border-borde bg-[#0a0c12] font-mono text-xs max-lg:hidden" aria-hidden="true">
+        <div class="border-b border-borde px-4 py-2 text-tinta-tenue">cargo test</div>
+        <div class="space-y-1 p-4 text-tinta-tenue">
+          <p>running 247 tests</p>
+          <p>test catalogo::bonificaciones ... <span class="text-ok">ok</span></p>
+          <p>test caja::cierre_con_diferencia ... <span class="text-ok">ok</span></p>
+          <p>test importacion::detecta_encabezado ... <span class="text-ok">ok</span></p>
+          <p class="pt-2 text-tinta-media">test result: <span class="text-ok">ok</span>. 247 passed; 0 failed</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2" data-aparece data-escalonado>
+      {ficha.map((f) => (
+        <article class="tarjeta p-6">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-[11px] tracking-[0.14em] text-tinta-tenue uppercase">{f.rotulo}</span>
+            <Icono nombre={f.icono} class="size-5 text-tinta-tenue" />
+          </div>
+          <h3 class="mt-4 text-xl font-semibold tracking-tight">{f.titulo}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-tinta-media">{f.texto}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

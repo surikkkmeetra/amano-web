@@ -1,0 +1,45 @@
+---
+import Icono from "./Icono.astro";
+import { preguntas, mailto } from "../config";
+---
+
+<section id="preguntas" class="relative py-24 sm:py-32">
+  <div class="contenedor grid gap-12 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
+    <div data-aparece>
+      <p class="etiqueta">Preguntas</p>
+      <h2 class="titulo-seccion degradado mt-5">Preguntas frecuentes.</h2>
+      <p class="bajada-seccion">
+        ¿Te queda alguna duda? <a href={mailto} class="text-acento-vivo underline decoration-acento/40 underline-offset-4 hover:decoration-acento">Escribinos</a>.
+      </p>
+    </div>
+
+    <div class="divide-y divide-borde border-y border-borde" data-aparece data-escalonado>
+      {preguntas.map((q, i) => (
+        <details class="group" name="preguntas" open={i === 0}>
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-left font-medium transition hover:text-acento-vivo [&::-webkit-details-marker]:hidden">
+            {q.p}
+            <span class="grid size-7 shrink-0 place-items-center rounded-full border border-borde text-tinta-tenue transition duration-300 group-open:rotate-45 group-open:border-acento/50 group-open:text-acento-vivo">
+              <Icono nombre="mas" class="size-3.5" trazo={2.25} />
+            </span>
+          </summary>
+          <div class="respuesta">
+            <p class="pb-6 pr-12 leading-relaxed text-tinta-media">{q.r}</p>
+          </div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Apertura animada donde el navegador lo soporta; si no, abre de golpe. */
+  @supports (interpolate-size: allow-keywords) {
+    details { interpolate-size: allow-keywords; }
+    details::details-content {
+      block-size: 0;
+      overflow: hidden;
+      transition: block-size .35s ease, content-visibility .35s allow-discrete;
+    }
+    details[open]::details-content { block-size: auto; }
+  }
+</style>
