@@ -5,19 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Amano — Sistema de gestión comercial</title>
 <meta name="description" content="Sistema de gestión comercial para casas de electricidad e iluminación. Aplicación de escritorio para Windows.">
+<meta name="theme-color" content="#0a246a">
 
-<!-- Open Graph: cómo se ve el enlace cuando se comparte. -->
 <meta property="og:title" content="Amano — Sistema de gestión comercial">
 <meta property="og:description" content="Sistema de gestión comercial para casas de electricidad e iluminación. Aplicación de escritorio para Windows.">
 <meta property="og:type" content="website">
 
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230a246a'/><text x='16' y='23' font-family='Tahoma,sans-serif' font-size='19' font-weight='bold' fill='white' text-anchor='middle'>A</text></svg>">
+
 <style>
 /* ==========================================================================
-   ENLACES Y DATOS A CONFIRMAR
+   AMANO — landing
+   Un solo archivo, sin dependencias externas.
 
-   Están todos acá abajo en el HTML, marcados con el comentario EDITAR.
-   Son tres: el repositorio, la descarga y la versión.
+   Lo que hay que editar está marcado con el comentario EDITAR.
+   Son dos cosas: la dirección de correo y la captura de pantalla.
    ========================================================================== */
+
+/* --- tokens -------------------------------------------------------------- */
 
 :root {
   --tinta:        #16181d;
@@ -25,18 +30,22 @@
   --tinta-tenue:  #7c828d;
   --fondo:        #fbfaf8;
   --papel:        #ffffff;
+  --papel-alto:   #f4f2ee;
   --linea:        #dedbd5;
   --linea-suave:  #ebe8e3;
 
   /* El azul es el de la barra de título del programa. */
   --acento:       #0a246a;
+  --acento-vivo:  #2a5adb;
   --acento-claro: #e8ecf6;
+  --ok:           #1f7a43;
 
   /* La cara gris y los relieves de 1 px son los de la interfaz. */
   --cara:         #d4d0c8;
   --luz:          #ffffff;
   --sombra:       #808080;
   --oscuro:       #0a0a0a;
+  --cara-clara:   #dfdcd6;
 
   --fuente: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
             "Helvetica Neue", Arial, sans-serif;
@@ -44,38 +53,54 @@
   --fuente-datos: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono",
                   monospace;
 
-  --ancho: 1000px;
+  --ancho: 1040px;
+  --borde-r: 0px;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --tinta:        #e8e6e3;
-    --tinta-media:  #a9aeb8;
-    --tinta-tenue:  #7f858f;
-    --fondo:        #14161a;
-    --papel:        #1b1e24;
-    --linea:        #2e333b;
-    --linea-suave:  #23272e;
+  :root:not([data-tema="claro"]) {
+    --tinta:        #e9e7e4;
+    --tinta-media:  --tinta-media-dark, #aab0ba;
+    --tinta-media:  #aab0ba;
+    --tinta-tenue:  #838a95;
+    --fondo:        #101216;
+    --papel:        #181b21;
+    --papel-alto:   #1f232b;
+    --linea:        #2d323b;
+    --linea-suave:  #23272f;
     --acento:       #9db4e8;
-    --acento-claro: #1d2334;
+    --acento-vivo:  #6f92e8;
+    --acento-claro: #1b2233;
+    --ok:           #5cc98a;
   }
 }
 
-:root[data-theme="dark"] {
-  --tinta:        #e8e6e3;
-  --tinta-media:  #a9aeb8;
-  --tinta-tenue:  #7f858f;
-  --fondo:        #14161a;
-  --papel:        #1b1e24;
-  --linea:        #2e333b;
-  --linea-suave:  #23272e;
+:root[data-tema="oscuro"] {
+  --tinta:        #e9e7e4;
+  --tinta-media:  #aab0ba;
+  --tinta-tenue:  #838a95;
+  --fondo:        #101216;
+  --papel:        #181b21;
+  --papel-alto:   #1f232b;
+  --linea:        #2d323b;
+  --linea-suave:  #23272f;
   --acento:       #9db4e8;
-  --acento-claro: #1d2334;
+  --acento-vivo:  #6f92e8;
+  --acento-claro: #1b2233;
+  --ok:           #5cc98a;
 }
 
 * { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 
-html { -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 
 body {
   margin: 0;
@@ -85,6 +110,7 @@ body {
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 .contenedor {
@@ -94,81 +120,190 @@ body {
   padding: 0 16px;
 }
 
-/* --- encabezado ---------------------------------------------------------- */
+/* --- aparición al hacer scroll ------------------------------------------- */
+
+.aparece {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.55s cubic-bezier(.2,.7,.3,1),
+              transform 0.55s cubic-bezier(.2,.7,.3,1);
+}
+
+.aparece.visible { opacity: 1; transform: none; }
+
+/* Sin JS, todo visible. */
+.sin-js .aparece { opacity: 1; transform: none; }
+
+/* --- barra superior ------------------------------------------------------ */
 
 .barra {
-  border-bottom: 1px solid var(--linea);
-  background: var(--papel);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--fondo) 82%, transparent);
+  backdrop-filter: saturate(1.6) blur(10px);
+  -webkit-backdrop-filter: saturate(1.6) blur(10px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.25s, background 0.25s;
+}
+
+.barra.pegada {
+  border-bottom-color: var(--linea);
+  background: color-mix(in srgb, var(--fondo) 94%, transparent);
 }
 
 .barra .contenedor {
   display: flex;
   align-items: center;
-  gap: 16px;
-  height: 56px;
+  gap: 14px;
+  height: 58px;
 }
 
 .marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   font-family: var(--fuente-ui);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   color: var(--tinta);
   text-decoration: none;
 }
 
-.marca span { color: var(--acento); }
+.marca .cuadro {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  background: var(--acento);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1;
+}
+
+:root[data-tema="oscuro"] .marca .cuadro,
+:root:not([data-tema="claro"]) .marca .cuadro { color: #0d1017; }
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-tema="oscuro"]) .marca .cuadro { color: #fff; }
+}
 
 .barra nav {
   margin-left: auto;
   display: flex;
-  gap: 20px;
-  font-size: 14px;
+  align-items: center;
+  gap: 4px;
 }
 
 .barra nav a {
+  padding: 6px 10px;
+  font-size: 14px;
   color: var(--tinta-media);
   text-decoration: none;
+  transition: color 0.15s, background 0.15s;
 }
 
-.barra nav a:hover { color: var(--acento); }
+.barra nav a:hover { color: var(--acento); background: var(--acento-claro); }
 
-@media (max-width: 620px) {
-  .barra nav a.opcional { display: none; }
+@media (max-width: 680px) { .barra nav a.opcional { display: none; } }
+
+.tema {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-left: 6px;
+  border: 1px solid var(--linea);
+  background: transparent;
+  color: var(--tinta-media);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.tema:hover { color: var(--acento); border-color: var(--acento); }
+.tema svg { width: 15px; height: 15px; }
+.tema .luna { display: none; }
+:root[data-tema="oscuro"] .tema .sol { display: none; }
+:root[data-tema="oscuro"] .tema .luna { display: block; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) .tema .sol { display: none; }
+  :root:not([data-tema="claro"]) .tema .luna { display: block; }
 }
 
 /* --- portada ------------------------------------------------------------- */
 
 .portada {
-  padding: 72px 0 48px;
-  border-bottom: 1px solid var(--linea-suave);
+  position: relative;
+  padding: 88px 0 64px;
+  overflow: hidden;
 }
 
+/* Cuadrícula de fondo, con desvanecido hacia abajo. */
+.portada::before {
+  content: "";
+  position: absolute;
+  inset: -1px 0 auto 0;
+  height: 520px;
+  background-image:
+    linear-gradient(var(--linea-suave) 1px, transparent 1px),
+    linear-gradient(90deg, var(--linea-suave) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(120% 78% at 50% 0%, #000 35%, transparent 78%);
+          mask-image: radial-gradient(120% 78% at 50% 0%, #000 35%, transparent 78%);
+  pointer-events: none;
+}
+
+.portada .contenedor { position: relative; }
+
 .etiqueta {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-family: var(--fuente-datos);
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--acento);
   background: var(--acento-claro);
-  border: 1px solid var(--linea);
-  padding: 3px 8px;
-  margin-bottom: 20px;
+  border: 1px solid color-mix(in srgb, var(--acento) 22%, transparent);
+  padding: 4px 10px;
+  margin-bottom: 22px;
+}
+
+.punto {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 60%, transparent);
+  animation: latido 2.4s ease-out infinite;
+}
+
+@keyframes latido {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 55%, transparent); }
+  70%  { box-shadow: 0 0 0 7px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
 }
 
 h1 {
-  margin: 0 0 16px;
-  font-size: clamp(30px, 6vw, 46px);
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  font-weight: 650;
+  margin: 0 0 18px;
+  font-size: clamp(32px, 6.2vw, 52px);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  font-weight: 660;
+  max-width: 19ch;
+}
+
+h1 .resalte {
+  background: linear-gradient(transparent 62%, color-mix(in srgb, var(--acento) 22%, transparent) 0);
 }
 
 .bajada {
   margin: 0;
-  max-width: 60ch;
-  font-size: clamp(17px, 2.4vw, 19px);
+  max-width: 58ch;
+  font-size: clamp(17px, 2.3vw, 19.5px);
   color: var(--tinta-media);
 }
 
@@ -176,45 +311,102 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 28px;
+  margin-top: 30px;
 }
 
 .boton {
-  display: inline-block;
-  padding: 10px 20px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
   font-size: 15px;
-  font-weight: 550;
+  font-weight: 560;
+  font-family: inherit;
   text-decoration: none;
+  cursor: pointer;
   border: 1px solid var(--acento);
   background: var(--acento);
-  color: #fff;
-  transition: opacity 0.12s;
+  color: var(--fondo);
+  overflow: hidden;
+  transition: transform 0.14s ease, box-shadow 0.2s ease;
 }
 
-.boton:hover { opacity: 0.88; }
+.boton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.55s ease;
+}
+
+.boton:hover::after { transform: translateX(100%); }
+
+.boton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--acento) 26%, transparent);
+}
+
+.boton:active { transform: translateY(0); }
 
 .boton.secundario {
   background: transparent;
   color: var(--acento);
+  box-shadow: none;
 }
 
-.boton.secundario:hover {
-  background: var(--acento-claro);
-  opacity: 1;
-}
+.boton.secundario:hover { background: var(--acento-claro); }
+.boton.secundario::after { display: none; }
 
 .nota-descarga {
-  margin-top: 14px;
+  margin-top: 16px;
   font-size: 13.5px;
   color: var(--tinta-tenue);
 }
 
-/* --- ventana (marco de captura) ------------------------------------------
-   El marco imita la ventana del programa: barra de título azul y relieve de
-   1 px, que es como se ve la aplicación de verdad.
-   ------------------------------------------------------------------------- */
+.nota-descarga code {
+  font-family: var(--fuente-datos);
+  font-size: 12.5px;
+}
 
-.muestra { padding: 48px 0; }
+/* --- cifras -------------------------------------------------------------- */
+
+.cifras {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  margin-top: 56px;
+  background: var(--linea);
+  border: 1px solid var(--linea);
+}
+
+.cifra {
+  background: var(--papel);
+  padding: 18px 20px;
+}
+
+.cifra b {
+  display: block;
+  font-family: var(--fuente-datos);
+  font-size: clamp(22px, 3.4vw, 28px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--tinta);
+  font-variant-numeric: tabular-nums;
+}
+
+.cifra span {
+  display: block;
+  margin-top: 5px;
+  font-size: 13px;
+  color: var(--tinta-tenue);
+}
+
+/* --- ventana (marco de captura) ------------------------------------------ */
+
+.muestra { padding: 56px 0; }
 
 .ventana {
   background: var(--cara);
@@ -223,16 +415,19 @@ h1 {
     inset -1px -1px var(--oscuro),
     inset  1px  1px var(--luz),
     inset -2px -2px var(--sombra),
-    inset  2px  2px #dfdcd6,
-    0 10px 30px rgba(0, 0, 0, 0.13);
+    inset  2px  2px var(--cara-clara),
+    0 18px 50px rgba(0, 0, 0, 0.17);
+  transition: transform 0.5s cubic-bezier(.2,.7,.3,1);
 }
+
+.muestra .aparece.visible .ventana { transform: none; }
 
 .ventana-titulo {
   display: flex;
   align-items: center;
   gap: 8px;
   height: 24px;
-  padding: 0 3px 0 4px;
+  padding: 0 3px 0 5px;
   background: linear-gradient(90deg, #0a246a, #2a5adb);
   color: #fff;
   font-family: var(--fuente-ui);
@@ -240,11 +435,7 @@ h1 {
   font-weight: 700;
 }
 
-.ventana-botones {
-  margin-left: auto;
-  display: flex;
-  gap: 2px;
-}
+.ventana-botones { margin-left: auto; display: flex; gap: 2px; }
 
 .ventana-botones i {
   width: 16px;
@@ -254,24 +445,17 @@ h1 {
     inset -1px -1px var(--oscuro),
     inset  1px  1px var(--luz),
     inset -2px -2px var(--sombra),
-    inset  2px  2px #dfdcd6;
+    inset  2px  2px var(--cara-clara);
 }
 
 .ventana-cuerpo {
   margin-top: 3px;
   background: var(--papel);
-  box-shadow:
-    inset  1px  1px var(--sombra),
-    inset -1px -1px var(--luz);
+  box-shadow: inset 1px 1px var(--sombra), inset -1px -1px var(--luz);
 }
 
-.ventana-cuerpo img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
+.ventana-cuerpo img { display: block; width: 100%; height: auto; }
 
-/* Lo que se ve mientras no haya captura cargada. */
 .sin-captura {
   aspect-ratio: 16 / 10;
   display: flex;
@@ -286,11 +470,11 @@ h1 {
   font-size: 13px;
   background:
     repeating-conic-gradient(var(--linea-suave) 0% 25%, transparent 0% 50%)
-    50% / 16px 16px;
+    50% / 18px 18px;
 }
 
 .pie-muestra {
-  margin-top: 12px;
+  margin-top: 14px;
   font-size: 13.5px;
   color: var(--tinta-tenue);
   text-align: center;
@@ -298,48 +482,187 @@ h1 {
 
 /* --- secciones ----------------------------------------------------------- */
 
-section { padding: 48px 0; }
-
+section { padding: 64px 0; }
 section + section { border-top: 1px solid var(--linea-suave); }
 
 h2 {
-  margin: 0 0 8px;
-  font-size: 13px;
+  margin: 0 0 10px;
+  font-size: 12.5px;
   font-weight: 650;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acento);
+}
+
+.titulo-seccion {
+  margin: 0 0 14px;
+  font-size: clamp(23px, 3.6vw, 31px);
+  line-height: 1.22;
+  letter-spacing: -0.015em;
+  font-weight: 630;
+  max-width: 26ch;
+}
+
+.parrafo {
+  max-width: 66ch;
+  margin: 0 0 16px;
+  color: var(--tinta-media);
+}
+
+.encabezado-seccion { margin-bottom: 34px; }
+
+/* --- demostración de bonificaciones -------------------------------------- */
+
+.demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--linea);
+  border: 1px solid var(--linea);
+}
+
+@media (max-width: 800px) { .demo { grid-template-columns: 1fr; } }
+
+.demo-lado { background: var(--papel); padding: 26px; }
+.demo-lado.resultado { background: var(--papel-alto); }
+
+.rotulo {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 620;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--tinta-tenue);
 }
 
-.titulo-seccion {
-  margin: 0 0 28px;
-  font-size: clamp(22px, 3.4vw, 28px);
-  line-height: 1.25;
-  letter-spacing: -0.01em;
-  font-weight: 620;
-  max-width: 34ch;
+.campo {
+  width: 100%;
+  padding: 11px 13px;
+  font-family: var(--fuente-datos);
+  font-size: 16px;
+  color: var(--tinta);
+  background: var(--fondo);
+  border: 1px solid var(--linea);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.parrafo {
-  max-width: 68ch;
-  margin: 0 0 16px;
+.campo:focus {
+  border-color: var(--acento);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--acento) 16%, transparent);
+}
+
+.fichas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+
+.ficha-btn {
+  padding: 5px 10px;
+  font-family: var(--fuente-datos);
+  font-size: 12.5px;
+  color: var(--tinta-media);
+  background: var(--fondo);
+  border: 1px solid var(--linea);
+  cursor: pointer;
+  transition: all 0.14s;
+}
+
+.ficha-btn:hover, .ficha-btn.activa {
+  color: var(--acento);
+  border-color: var(--acento);
+  background: var(--acento-claro);
+}
+
+.ayuda {
+  margin: 14px 0 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--tinta-tenue);
+}
+
+.cadena { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 20px; min-height: 30px; }
+
+.eslabon {
+  padding: 3px 9px;
+  font-family: var(--fuente-datos);
+  font-size: 13px;
+  color: var(--acento);
+  background: var(--acento-claro);
+  border: 1px solid color-mix(in srgb, var(--acento) 25%, transparent);
+  animation: entra 0.26s cubic-bezier(.2,.8,.3,1) backwards;
+}
+
+@keyframes entra {
+  from { opacity: 0; transform: translateY(-4px) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+
+.flecha { color: var(--tinta-tenue); font-size: 12px; }
+
+.renglon-resultado {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--linea-suave);
+  font-size: 14.5px;
   color: var(--tinta-media);
 }
+
+.renglon-resultado:last-child { border-bottom: 0; }
+
+.renglon-resultado b {
+  font-family: var(--fuente-datos);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--tinta);
+  font-variant-numeric: tabular-nums;
+}
+
+.renglon-resultado.destacado b { font-size: 24px; color: var(--acento); }
+
+.mal {
+  margin-top: 18px;
+  padding: 11px 13px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--tinta-media);
+  background: var(--fondo);
+  border-left: 3px solid var(--acento);
+}
+
+.mal b { color: var(--tinta); font-family: var(--fuente-datos); }
 
 /* --- funciones ----------------------------------------------------------- */
 
 .funciones {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
   gap: 1px;
   background: var(--linea);
   border: 1px solid var(--linea);
 }
 
 .funcion {
+  position: relative;
   background: var(--papel);
-  padding: 20px;
+  padding: 22px;
+  transition: background 0.18s;
 }
+
+.funcion::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--acento);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.25s cubic-bezier(.2,.8,.3,1);
+}
+
+.funcion:hover { background: var(--papel-alto); }
+.funcion:hover::before { transform: scaleY(1); }
 
 .funcion h3 {
   margin: 0 0 6px;
@@ -357,106 +680,93 @@ h2 {
 
 /* --- ficha técnica ------------------------------------------------------- */
 
-.ficha {
-  display: grid;
-  grid-template-columns: 180px 1fr;
-  border-top: 1px solid var(--linea);
-}
+.ficha { display: grid; grid-template-columns: 190px 1fr; border-top: 1px solid var(--linea); }
 
-.ficha dt,
-.ficha dd {
+.ficha dt, .ficha dd {
   margin: 0;
-  padding: 12px 0;
+  padding: 14px 0;
   border-bottom: 1px solid var(--linea-suave);
 }
 
-.ficha dt {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--tinta-tenue);
-  padding-right: 16px;
-}
+.ficha dt { font-size: 14px; font-weight: 600; color: var(--tinta-tenue); padding-right: 16px; }
+.ficha dd { font-size: 15px; color: var(--tinta-media); }
 
-.ficha dd {
-  font-size: 15px;
-  color: var(--tinta-media);
-}
-
-.ficha dd code {
+.ficha dd code,
+.parrafo code {
   font-family: var(--fuente-datos);
   font-size: 13.5px;
   background: var(--acento-claro);
+  color: var(--acento);
   padding: 1px 5px;
 }
 
-@media (max-width: 620px) {
+@media (max-width: 680px) {
   .ficha { grid-template-columns: 1fr; }
   .ficha dt { padding-bottom: 0; border-bottom: 0; }
   .ficha dd { padding-top: 4px; }
 }
 
-/* --- descarga ------------------------------------------------------------ */
+/* --- contacto ------------------------------------------------------------ */
 
-.descarga {
+.tarjeta-contacto {
+  position: relative;
   background: var(--papel);
   border: 1px solid var(--linea);
-  padding: 32px;
+  padding: 36px;
+  overflow: hidden;
 }
 
-.descarga .titulo-seccion { margin-bottom: 12px; }
-
-.requisitos {
-  margin: 20px 0 0;
-  padding: 0;
-  list-style: none;
-  font-size: 14px;
-  color: var(--tinta-tenue);
+.tarjeta-contacto::before {
+  content: "";
+  position: absolute;
+  right: -80px; top: -80px;
+  width: 260px; height: 260px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--acento) 12%, transparent), transparent 70%);
+  pointer-events: none;
 }
 
+.requisitos { margin: 22px 0 0; padding: 0; list-style: none; font-size: 14px; color: var(--tinta-tenue); }
 .requisitos li { padding: 3px 0; }
-
-.requisitos li::before {
-  content: "·";
-  margin-right: 8px;
-  color: var(--acento);
-}
+.requisitos li::before { content: "·"; margin-right: 8px; color: var(--acento); }
 
 /* --- pie ----------------------------------------------------------------- */
 
 footer {
   border-top: 1px solid var(--linea);
   background: var(--papel);
-  padding: 28px 0;
+  padding: 30px 0;
   font-size: 14px;
   color: var(--tinta-tenue);
 }
 
-footer .contenedor {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-  align-items: center;
-}
-
+footer .contenedor { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; }
 footer a { color: var(--tinta-media); text-decoration: none; }
 footer a:hover { color: var(--acento); }
 footer .derecha { margin-left: auto; }
 
-@media (max-width: 620px) {
-  footer .derecha { margin-left: 0; }
-}
+@media (max-width: 680px) { footer .derecha { margin-left: 0; } }
 </style>
 </head>
 
-<body>
+<body class="sin-js">
 
-<header class="barra">
+<header class="barra" id="barra">
   <div class="contenedor">
-    <a class="marca" href="#">AMANO<span>.</span></a>
+    <a class="marca" href="#"><span class="cuadro">A</span> AMANO</a>
     <nav>
-      <a href="#funciones">Funciones</a>
+      <a href="#precios">Precios</a>
+      <a href="#funciones" class="opcional">Funciones</a>
       <a href="#tecnica" class="opcional">Ficha técnica</a>
       <a href="#contacto">Contacto</a>
+      <button class="tema" id="tema" type="button" aria-label="Cambiar entre claro y oscuro">
+        <svg class="sol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="4.2"/>
+          <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/>
+        </svg>
+        <svg class="luna" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.6 6.6 0 0 0 10.5 10.5z"/>
+        </svg>
+      </button>
     </nav>
   </div>
 </header>
@@ -466,34 +776,40 @@ footer .derecha { margin-left: auto; }
   <section class="portada">
     <div class="contenedor">
       <!-- EDITAR: la versión, cuando publiques una nueva. -->
-      <p class="etiqueta">Versión 0.1.0 · en desarrollo</p>
+      <p class="etiqueta aparece"><span class="punto"></span> Versión 0.1.0 · beta</p>
 
-      <h1>Sistema de gestión comercial para casas de electricidad e iluminación</h1>
+      <h1 class="aparece">Gestión comercial para casas de <span class="resalte">electricidad e iluminación</span></h1>
 
-      <p class="bajada">
-        Aplicación de escritorio para Windows. Administra catálogo, precios,
-        ventas de mostrador, comprobantes, cuentas corrientes, caja e
-        inventario. Funciona sin conexión, sobre una base local.
+      <p class="bajada aparece">
+        Aplicación de escritorio para Windows. Catálogo, precios, ventas de
+        mostrador, comprobantes, cuentas corrientes, caja e inventario.
+        Funciona sin conexión, sobre una base local.
       </p>
 
-      <div class="acciones">
+      <div class="acciones aparece">
         <!-- EDITAR: poné tu dirección de correo. -->
         <a class="boton" href="mailto:CORREO@EJEMPLO.COM?subject=Amano">
           Pedir una demostración
         </a>
-        <a class="boton secundario" href="#funciones">
-          Ver qué hace
-        </a>
+        <a class="boton secundario" href="#precios">Ver cómo calcula</a>
       </div>
 
-      <p class="nota-descarga">
-        Instalador para Windows 10 y 11, 64 bits · funciona sin conexión
+      <p class="nota-descarga aparece">
+        Instalador <code>.exe</code> y <code>.msi</code> · Windows 10 y 11 ·
+        64 bits
       </p>
+
+      <div class="cifras aparece">
+        <div class="cifra"><b data-hasta="35000" data-sufijo="">0</b><span>artículos en catálogo, sin demora</span></div>
+        <div class="cifra"><b data-hasta="2" data-decimales="1" data-sufijo=" ms">0</b><span>en abrir el catálogo entero</span></div>
+        <div class="cifra"><b data-hasta="247">0</b><span>pruebas automáticas</span></div>
+        <div class="cifra"><b data-hasta="0" data-texto="Sin">0</b><span>cuota mensual ni servidor</span></div>
+      </div>
     </div>
   </section>
 
   <section class="muestra">
-    <div class="contenedor">
+    <div class="contenedor aparece">
       <div class="ventana">
         <div class="ventana-titulo">
           <span>Amano — Mostrador</span>
@@ -516,146 +832,118 @@ footer .derecha { margin-left: auto; }
     </div>
   </section>
 
+  <!-- ==================== demostración en vivo ==================== -->
+  <section id="precios">
+    <div class="contenedor">
+      <div class="encabezado-seccion aparece">
+        <h2>El precio real</h2>
+        <p class="titulo-seccion">La bonificación no se suma. Se encadena.</p>
+        <p class="parrafo">
+          El precio que manda el proveedor casi nunca es el que se paga: encima
+          van descuentos, y cada uno cae sobre lo que quedó del anterior.
+          Escribilo como lo escribe tu proveedor y mirá el resultado.
+        </p>
+      </div>
+
+      <div class="demo aparece">
+        <div class="demo-lado">
+          <label class="rotulo" for="entrada">Bonificación, como viene en la lista</label>
+          <input class="campo" id="entrada" type="text" value="30 + 10 + 5"
+                 autocomplete="off" spellcheck="false"
+                 aria-describedby="ayuda-demo">
+
+          <div class="fichas" id="fichas">
+            <button class="ficha-btn" type="button">35%</button>
+            <button class="ficha-btn" type="button">30 + 10 + 5</button>
+            <button class="ficha-btn" type="button">30/10/5</button>
+            <button class="ficha-btn" type="button">-30 -10</button>
+            <button class="ficha-btn" type="button">Bonif. 25%</button>
+            <button class="ficha-btn" type="button">12,5%</button>
+            <button class="ficha-btn" type="button">60% hasta agotar stock</button>
+          </div>
+
+          <p class="ayuda" id="ayuda-demo">
+            Cada proveedor la escribe distinto. El sistema la interpreta igual,
+            y descarta lo que no puede ser un porcentaje: el año de la lista,
+            el número de lista, el texto suelto.
+          </p>
+
+          <div style="margin-top:22px">
+            <label class="rotulo" for="lista">Precio de lista</label>
+            <input class="campo" id="lista" type="text" inputmode="decimal"
+                   value="1000" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="demo-lado resultado">
+          <span class="rotulo">Cadena interpretada</span>
+          <div class="cadena" id="cadena"></div>
+
+          <div class="renglon-resultado">
+            <span>Si se sumaran los descuentos</span>
+            <b id="sumado">—</b>
+          </div>
+          <div class="renglon-resultado destacado">
+            <span>Descuento real</span>
+            <b id="real">—</b>
+          </div>
+          <div class="renglon-resultado">
+            <span>Costo final</span>
+            <b id="costo">—</b>
+          </div>
+
+          <p class="mal" id="mal"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="funciones">
     <div class="contenedor">
-      <h2>Funciones</h2>
-      <p class="titulo-seccion">Lo que resuelve, del mostrador al cierre de caja.</p>
+      <div class="encabezado-seccion aparece">
+        <h2>Funciones</h2>
+        <p class="titulo-seccion">Del mostrador al cierre de caja.</p>
+      </div>
 
-      <div class="funciones">
-
-        <div class="funcion">
-          <h3>Catálogo</h3>
-          <p>
-            Costo por unidad de venta, márgenes por rubro y listas de precio
-            diferenciadas por tipo de cliente.
-          </p>
-        </div>
-
-        <div class="funcion">
-          <h3>Importación de listas</h3>
-          <p>
-            Listas de proveedor desde Excel, con detección del encabezado,
-            mapeo de columnas y comparación contra el catálogo antes de
-            aceptar los cambios.
-          </p>
-        </div>
-
-        <div class="funcion">
-          <h3>Bonificaciones en cadena</h3>
-          <p>
-            De cualquier extensión, interpretadas desde el formato en que las
-            escribe cada proveedor.
-          </p>
-        </div>
-
-        <div class="funcion">
-          <h3>Unidades de compra y de venta</h3>
-          <p>
-            Independientes, con factor de conversión: el producto que se compra
-            por rollo y se vende por metro.
-          </p>
-        </div>
-
-        <div class="funcion">
-          <h3>Mostrador</h3>
-          <p>
-            Venta rápida con lector de código de barras y operación completa
-            por teclado.
-          </p>
-        </div>
-
-        <div class="funcion">
-          <h3>Comprobantes</h3>
-          <p>
-            Presupuesto, pedido, remito y factura, del lado de ventas y del de
-            compras.
-          </p>
-        </div>
-
-        <div class="funcion">
-          <h3>Cuentas corrientes</h3>
-          <p>
-            De clientes y proveedores, con cobros parciales y saldo por cuenta.
-          </p>
-        </div>
-
-        <div class="funcion">
-          <h3>Caja diaria</h3>
-          <p>
-            Movimientos por medio de pago, arqueo y cierre con diferencia.
-          </p>
-        </div>
-
-        <div class="funcion">
-          <h3>Informes</h3>
-          <p>
-            Ventas, rentabilidad, stock y deudas, exportables a Excel.
-          </p>
-        </div>
-
-        <div class="funcion">
-          <h3>Revisión del catálogo</h3>
-          <p>
-            Ocho controles automáticos de consistencia sobre precios,
-            existencias y clasificación.
-          </p>
-        </div>
-
-        <div class="funcion">
-          <h3>Exportación</h3>
-          <p>
-            A Excel y a formatos de ancho fijo, para sistemas que los piden.
-          </p>
-        </div>
-
-        <div class="funcion">
-          <h3>Sin conexión</h3>
-          <p>
-            Base local. No depende de internet ni de un servicio externo para
-            operar.
-          </p>
-        </div>
-
+      <div class="funciones aparece">
+        <div class="funcion"><h3>Catálogo</h3><p>Costo por unidad de venta, márgenes por rubro y listas de precio diferenciadas por tipo de cliente.</p></div>
+        <div class="funcion"><h3>Importación de listas</h3><p>Listas de proveedor desde Excel, con detección del encabezado, mapeo de columnas y comparación contra el catálogo antes de aceptar los cambios.</p></div>
+        <div class="funcion"><h3>Bonificaciones en cadena</h3><p>De cualquier extensión, interpretadas desde el formato en que las escribe cada proveedor.</p></div>
+        <div class="funcion"><h3>Unidades de compra y de venta</h3><p>Independientes, con factor de conversión: el producto que se compra por rollo y se vende por metro.</p></div>
+        <div class="funcion"><h3>Mostrador</h3><p>Venta rápida con lector de código de barras y operación completa por teclado.</p></div>
+        <div class="funcion"><h3>Comprobantes</h3><p>Presupuesto, pedido, remito y factura, del lado de ventas y del de compras.</p></div>
+        <div class="funcion"><h3>Cuentas corrientes</h3><p>De clientes y proveedores, con cobros parciales y saldo por cuenta.</p></div>
+        <div class="funcion"><h3>Caja diaria</h3><p>Movimientos por medio de pago, arqueo y cierre con diferencia.</p></div>
+        <div class="funcion"><h3>Informes</h3><p>Ventas, rentabilidad, stock y deudas, exportables a Excel.</p></div>
+        <div class="funcion"><h3>Revisión del catálogo</h3><p>Ocho controles automáticos de consistencia sobre precios, existencias y clasificación.</p></div>
+        <div class="funcion"><h3>Exportación</h3><p>A Excel y a formatos de ancho fijo, para sistemas que los piden.</p></div>
+        <div class="funcion"><h3>Sin conexión</h3><p>Base local. No depende de internet ni de un servicio externo para operar.</p></div>
       </div>
     </div>
   </section>
 
   <section id="tecnica">
     <div class="contenedor">
-      <h2>Ficha técnica</h2>
-      <p class="titulo-seccion">Cómo está armado.</p>
+      <div class="encabezado-seccion aparece">
+        <h2>Ficha técnica</h2>
+        <p class="titulo-seccion">Cómo está armado.</p>
+      </div>
 
-      <dl class="ficha">
+      <dl class="ficha aparece">
         <dt>Motor</dt>
-        <dd>
-          Rust sobre SQLite embebido, en modo WAL y con transacciones
-          inmediatas para soportar varias terminales contra la misma base.
-        </dd>
+        <dd>Rust sobre SQLite embebido, en modo WAL y con transacciones inmediatas para soportar varias terminales contra la misma base.</dd>
 
         <dt>Esquema</dt>
-        <dd>
-          Migraciones incrementales numeradas: una base creada con una versión
-          anterior se abre con la versión nueva sin intervención.
-        </dd>
+        <dd>Migraciones incrementales numeradas: una base creada con una versión anterior se abre con la versión nueva sin intervención.</dd>
 
         <dt>Interfaz</dt>
-        <dd>
-          React con TypeScript, sin dependencias de componentes externas.
-          Diseño de escritorio clásico con navegación por teclado.
-        </dd>
+        <dd>React con TypeScript, sin dependencias de componentes externas. Diseño de escritorio clásico con navegación por teclado.</dd>
 
         <dt>Empaquetado</dt>
-        <dd>
-          Tauri. Instalador para Windows en formato <code>.exe</code> y
-          <code>.msi</code>, con resolución automática del runtime de la
-          interfaz.
-        </dd>
+        <dd>Tauri. Instalador para Windows en formato <code>.exe</code> y <code>.msi</code>, con resolución automática del runtime de la interfaz.</dd>
 
         <dt>Pruebas</dt>
-        <dd>
-          247 pruebas automáticas sobre un generador determinista que arma un
-          negocio completo y reproduce siempre el mismo escenario.
-        </dd>
+        <dd>247 pruebas automáticas sobre un generador determinista que arma un negocio completo y reproduce siempre el mismo escenario.</dd>
 
         <dt>Plataforma</dt>
         <dd>Windows 10 y 11, 64 bits.</dd>
@@ -665,7 +953,7 @@ footer .derecha { margin-left: auto; }
 
   <section id="contacto">
     <div class="contenedor">
-      <div class="descarga">
+      <div class="tarjeta-contacto aparece">
         <h2>Contacto</h2>
         <p class="titulo-seccion">Instalación y demostración.</p>
 
@@ -677,9 +965,7 @@ footer .derecha { margin-left: auto; }
 
         <div class="acciones">
           <!-- EDITAR: poné tu dirección de correo. -->
-          <a class="boton" href="mailto:CORREO@EJEMPLO.COM?subject=Amano">
-            Escribir
-          </a>
+          <a class="boton" href="mailto:CORREO@EJEMPLO.COM?subject=Amano">Escribir</a>
         </div>
 
         <ul class="requisitos">
@@ -702,6 +988,204 @@ footer .derecha { margin-left: auto; }
     </span>
   </div>
 </footer>
+
+<script>
+(function () {
+  "use strict";
+
+  document.body.classList.remove("sin-js");
+
+  var raiz = document.documentElement;
+  var reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* --- tema ------------------------------------------------------------- */
+
+  try {
+    var guardado = localStorage.getItem("tema");
+    if (guardado === "claro" || guardado === "oscuro") raiz.dataset.tema = guardado;
+  } catch (e) { /* modo privado: se usa el del sistema */ }
+
+  document.getElementById("tema").addEventListener("click", function () {
+    var oscuroAhora = raiz.dataset.tema
+      ? raiz.dataset.tema === "oscuro"
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var nuevo = oscuroAhora ? "claro" : "oscuro";
+    raiz.dataset.tema = nuevo;
+    try { localStorage.setItem("tema", nuevo); } catch (e) {}
+  });
+
+  /* --- barra pegada ------------------------------------------------------ */
+
+  var barra = document.getElementById("barra");
+  var alScrollear = function () {
+    barra.classList.toggle("pegada", window.scrollY > 8);
+  };
+  alScrollear();
+  window.addEventListener("scroll", alScrollear, { passive: true });
+
+  /* --- aparición al entrar en pantalla ----------------------------------- */
+
+  var porAparecer = document.querySelectorAll(".aparece");
+
+  if (!("IntersectionObserver" in window) || reducido) {
+    porAparecer.forEach(function (el) { el.classList.add("visible"); });
+  } else {
+    var observador = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (entrada) {
+        if (!entrada.isIntersecting) return;
+        entrada.target.classList.add("visible");
+        observador.unobserve(entrada.target);
+        if (entrada.target.classList.contains("cifras")) contarTodo(entrada.target);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+
+    porAparecer.forEach(function (el, i) {
+      // Un escalonado corto entre hermanos, para que no entren todos de golpe.
+      el.style.transitionDelay = (Math.min(i, 5) * 55) + "ms";
+      observador.observe(el);
+    });
+  }
+
+  /* --- cifras que cuentan ------------------------------------------------ */
+
+  function contarTodo(caja) {
+    caja.querySelectorAll("[data-hasta]").forEach(function (el) {
+      if (el.dataset.texto) { el.textContent = el.dataset.texto; return; }
+      contar(el);
+    });
+  }
+
+  function contar(el) {
+    var hasta = parseFloat(el.dataset.hasta);
+    var decimales = parseInt(el.dataset.decimales || "0", 10);
+    var sufijo = el.dataset.sufijo || "";
+    var duracion = 1100;
+    var arranque = null;
+
+    if (reducido) { el.textContent = formato(hasta, decimales) + sufijo; return; }
+
+    function paso(ahora) {
+      if (arranque === null) arranque = ahora;
+      var avance = Math.min((ahora - arranque) / duracion, 1);
+      // Desaceleración: rápido al principio, suave al final.
+      var suave = 1 - Math.pow(1 - avance, 3);
+      el.textContent = formato(hasta * suave, decimales) + sufijo;
+      if (avance < 1) requestAnimationFrame(paso);
+    }
+    requestAnimationFrame(paso);
+  }
+
+  function formato(n, decimales) {
+    return n.toLocaleString("es-AR", {
+      minimumFractionDigits: decimales,
+      maximumFractionDigits: decimales
+    });
+  }
+
+  /* --- demostración de bonificaciones ------------------------------------
+     Es la misma lectura que hace el programa: junta los números, acepta la
+     coma decimal y descarta lo que no puede ser un porcentaje.
+     --------------------------------------------------------------------- */
+
+  function cadenaDe(texto) {
+    var salida = [];
+    var numero = "";
+
+    function cerrar() {
+      if (!numero) return;
+      var valor = parseFloat(numero.replace(/\.$/, ""));
+      if (isFinite(valor) && valor > 0 && valor <= 100) salida.push(valor);
+      numero = "";
+    }
+
+    for (var i = 0; i <= texto.length; i++) {
+      var c = texto.charAt(i);
+      if (c >= "0" && c <= "9") {
+        numero += c;
+      } else if ((c === "," || c === ".") && numero) {
+        if (numero.indexOf(".") >= 0) cerrar();
+        else numero += ".";
+      } else {
+        cerrar();
+      }
+    }
+    return salida;
+  }
+
+  function aplicar(precio, cadena) {
+    var r = precio;
+    for (var i = 0; i < cadena.length; i++) r *= 1 - cadena[i] / 100;
+    return Math.round(r * 10000) / 10000;
+  }
+
+  var entrada = document.getElementById("entrada");
+  var lista = document.getElementById("lista");
+  var salidaCadena = document.getElementById("cadena");
+  var elSumado = document.getElementById("sumado");
+  var elReal = document.getElementById("real");
+  var elCosto = document.getElementById("costo");
+  var elMal = document.getElementById("mal");
+
+  function porcentaje(n) { return formato(n, 2) + " %"; }
+  function pesos(n) { return "$ " + formato(n, 2); }
+
+  function recalcular() {
+    var cadena = cadenaDe(entrada.value);
+    var precio = parseFloat(String(lista.value).replace(/\./g, "").replace(",", ".")) || 0;
+
+    salidaCadena.innerHTML = "";
+    if (!cadena.length) {
+      var vacio = document.createElement("span");
+      vacio.className = "flecha";
+      vacio.textContent = "sin descuentos";
+      salidaCadena.appendChild(vacio);
+    }
+    cadena.forEach(function (d, i) {
+      if (i > 0) {
+        var f = document.createElement("span");
+        f.className = "flecha";
+        f.textContent = "→";
+        salidaCadena.appendChild(f);
+      }
+      var e = document.createElement("span");
+      e.className = "eslabon";
+      e.style.animationDelay = (i * 45) + "ms";
+      e.textContent = "−" + formato(d, d % 1 ? 1 : 0) + " %";
+      salidaCadena.appendChild(e);
+    });
+
+    var suma = cadena.reduce(function (a, b) { return a + b; }, 0);
+    var real = 100 - aplicar(100, cadena);
+
+    elSumado.textContent = cadena.length ? porcentaje(Math.min(suma, 100)) : "—";
+    elReal.textContent = cadena.length ? porcentaje(real) : "—";
+    elCosto.textContent = precio > 0 ? pesos(aplicar(precio, cadena)) : "—";
+
+    if (cadena.length > 1) {
+      var diferencia = suma - real;
+      elMal.style.display = "";
+      elMal.innerHTML = "Sumar los descuentos da <b>" + porcentaje(Math.min(suma, 100)) +
+        "</b>. El descuento verdadero es <b>" + porcentaje(real) +
+        "</b>. La diferencia es de <b>" + formato(diferencia, 2) +
+        "</b> puntos, y sobre un catálogo entero eso es plata.";
+    } else {
+      elMal.style.display = "none";
+    }
+  }
+
+  entrada.addEventListener("input", recalcular);
+  lista.addEventListener("input", recalcular);
+
+  document.getElementById("fichas").addEventListener("click", function (e) {
+    if (e.target.tagName !== "BUTTON") return;
+    entrada.value = e.target.textContent.trim();
+    recalcular();
+    entrada.focus();
+  });
+
+  recalcular();
+})();
+</script>
 
 </body>
 </html>
